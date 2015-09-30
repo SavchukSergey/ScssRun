@@ -10,7 +10,7 @@ namespace ScssRun.Tests.Nodes {
         public void ParseTest() {
             const string css = "div.primary p.secondary a .first.second #elementId {color: red;}";
             var tokens = new Tokenizer().Read(css);
-            var context = new SscsParserContext(new TokensQueue(tokens));
+            var context = new ScssParserContext(new TokensQueue(tokens));
             var node = SelectorNode.Parse(context);
             Assert.AreEqual(5, node.Elements.Count);
 

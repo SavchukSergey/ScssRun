@@ -1,11 +1,11 @@
 ﻿using ScssRun.Tokens;
 
 namespace ScssRun {
-    public class SscsParserContext {
+    public class ScssParserContext {
 
         public TokensQueue Tokens { get; }
 
-        public SscsParserContext(TokensQueue tokens) {
+        public ScssParserContext(TokensQueue tokens) {
             Tokens = tokens;
         }
     }

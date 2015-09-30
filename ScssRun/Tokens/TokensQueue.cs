@@ -1,23 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ScssRun.Tokens {
     public class TokensQueue {
 
-        private readonly Queue<Token> _queue;
+        private readonly IList<Token> _queue;
+        private int _index;
 
         public TokensQueue(IEnumerable<Token> tokens) {
-            _queue = new Queue<Token>(tokens);
+            _queue = tokens.ToList();
+        }
+
+        public TokensQueue(IList<Token> tokens) {
+            _queue = tokens;
         }
 
         public Token Read() {
-            LastReadToken = _queue.Dequeue();
+            LastReadToken = _queue[_index++];
             return LastReadToken;
         }
 
         public Token Read(TokenType type) {
-            if (_queue.Count == 0) throw new TokenException("unexpected end of file", LastReadToken); //TODO: what if file is empty??
-            if (_queue.Count == 0 || Peek().Type != type) {
-                var tkn = _queue.Count > 0 ? Read() : LastReadToken;
+            if (Empty) throw new TokenException("unexpected end of file", LastReadToken); //TODO: what if file is empty??
+            if (Peek().Type != type) {
+                var tkn = !Empty ? Read() : LastReadToken;
                 switch (type) {
                     case TokenType.Comma:
                         throw new TokenException("comma expected", tkn);
@@ -36,23 +42,18 @@ namespace ScssRun.Tokens {
             return Read();
         }
 
-        public TokensQueue SkipWhitespaceAndComments() {
-            while (!Empty) {
-                var preview = _queue.Peek();
-                if (preview.Type == TokenType.Whitespace || preview.Type == TokenType.SingleLineComment || preview.Type == TokenType.MultiLineComment) {
-                    break;
-                }
-                _queue.Dequeue();
-            }
-            return this;
-        }
-
         public Token Peek() {
-            if (_queue.Count == 0) throw new TokenException("unexpected end of file", LastReadToken); //TODO: what if file is empty??
-            return _queue.Peek();
+            if (Empty) throw new TokenException("unexpected end of file", LastReadToken); //TODO: what if file is empty??
+            return _queue[_index];
         }
 
-        public bool Empty => _queue.Count == 0;
+        public TokensQueue Moment() {
+            return new TokensQueue(_queue) {
+                _index = _index
+            };
+        }
+
+        public bool Empty => _index >= _queue.Count;
 
         public int Count => _queue.Count;
 

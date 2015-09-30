@@ -6,9 +6,7 @@ namespace ScssRun.Nodes {
 
         public IList<ElementNode> Elements { get; } = new List<ElementNode>();
 
-        public IList<CommentNode> Comments { get; } = new List<CommentNode>();
-
-        public static SelectorNode Parse(SscsParserContext context) {
+        public new static SelectorNode Parse(ScssParserContext context) {
             var res = new SelectorNode();
             var stop = false;
             while (!context.Tokens.Empty && !stop) {

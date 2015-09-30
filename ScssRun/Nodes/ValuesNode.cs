@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
-    public class ElementNode : BaseNode {
+    public class ValuesNode : BaseValueNode {
 
-        public string Value { get; set; }
+        public IList<ValueNode>  Values { get; } = new List<ValueNode>();
 
-        public new static ElementNode Parse(ScssParserContext context) {
-            var res = new ElementNode();
-            var sb = new StringBuilder();
+        public new static ValuesNode Parse(ScssParserContext context) {
+            var res = new ValuesNode();
             var stop = false;
             while (!context.Tokens.Empty && !stop) {
                 var preview = context.Tokens.Peek();
@@ -19,24 +17,20 @@ namespace ScssRun.Nodes {
                         context.Tokens.Read();
                         res.Comments.Add(new CommentNode(preview));
                         break;
-                    case TokenType.Literal:
-                    case TokenType.Hash:
-                        context.Tokens.Read();
-                        sb.Append(preview.StringValue);
-                        break;
                     case TokenType.Whitespace:
-                        if (sb.Length == 0) {
-                            context.Tokens.Read();
-                        } else {
-                            stop = true;
-                        }
+                    case TokenType.Semicolon:
+                        context.Tokens.Read();
                         break;
-                    default:
+                    case TokenType.Literal:
+                        res.Values.Add(ValueNode.Parse(context));
+                        break;
+                    case TokenType.CloseCurlyBracket:
                         stop = true;
                         break;
+                    default:
+                        throw new TokenException("unexpected token", preview);
                 }
             }
-            res.Value = sb.ToString();
             return res;
         }
     }
