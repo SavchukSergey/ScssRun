@@ -23,36 +23,55 @@ namespace ScssRun.Nodes {
                         context.Tokens.Read();
                         break;
                     case TokenType.Literal:
+                        if (!string.IsNullOrWhiteSpace(res.Property)) {
+                            throw new TokenException("colon expected", preview);
+                        }
                         context.Tokens.Read();
                         res.Property = preview.StringValue;
                         break;
                     case TokenType.Colon:
+                        if (res.Value != null) {
+                            throw new TokenException("semicolon expected", preview);
+                        }
                         context.Tokens.Read();
                         res.Value = ParseValue(context);
+                        break;
+                    case TokenType.Semicolon:
+                        context.Tokens.Read();
+                        stop = true;
+                        break;
+                    case TokenType.CloseCurlyBracket:
                         stop = true;
                         break;
                     default:
                         throw new TokenException("unexpected token", preview);
                 }
             }
+            if (string.IsNullOrWhiteSpace(res.Property)) {
+                throw new TokenException("property name expected", context.Tokens.LastReadToken);
+            }
+            if (res.Value == null) {
+                throw new TokenException("property value expected", context.Tokens.LastReadToken);
+            }
             return res;
         }
 
         private static BaseValueNode ParseValue(ScssParserContext context) {
-            var tokens = context.Tokens.Moment();
-
+            var tokens = context.Tokens;
+            //todo: comments are lost. create aggregating node
             while (!tokens.Empty) {
-                var preview = context.Tokens.Peek();
+                var preview = tokens.Peek();
                 switch (preview.Type) {
                     case TokenType.Literal:
+                    case TokenType.Number:
                         return ValuesNode.Parse(context);
                     case TokenType.OpenCurlyBracket:
-                        context.Tokens.Read(TokenType.OpenCurlyBracket);
+                        tokens.Read(TokenType.OpenCurlyBracket);
                         var res = NestedValueNode.Parse(context);
-                        context.Tokens.Read(TokenType.CloseCurlyBracket);
+                        tokens.Read(TokenType.CloseCurlyBracket);
                         return res;
                     default:
-                        context.Tokens.Read();
+                        tokens.Read();
                         break;
                 }
             }

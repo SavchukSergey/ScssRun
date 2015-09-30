@@ -59,5 +59,17 @@ namespace ScssRun.Tokens {
 
         public Token LastReadToken { get; private set; }
 
+        public TokensQueue SkipWhite() {
+            while (!Empty && Peek().Type == TokenType.Whitespace) Read();
+            return this;
+        }
+
+        public TokensQueue Skip(TokenType type) {
+            if (!Empty) {
+                var preview = Peek();
+                if (preview.Type == type) Read();
+            }
+            return this;
+        }
     }
 }

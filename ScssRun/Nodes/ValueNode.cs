@@ -8,8 +8,7 @@ namespace ScssRun.Nodes {
 
         public new static ValueNode Parse(ScssParserContext context) {
             var res = new ValueNode();
-            var stop = false;
-            while (!context.Tokens.Empty && !stop) {
+            while (!context.Tokens.Empty) {
                 var preview = context.Tokens.Peek();
                 switch (preview.Type) {
                     case TokenType.SingleLineComment:
@@ -19,21 +18,16 @@ namespace ScssRun.Nodes {
                         break;
                     case TokenType.Whitespace:
                         context.Tokens.Read();
-                        res.Value += " ";
-                        break;
+                        return res;
                     case TokenType.Literal:
                         context.Tokens.Read();
-                        res.Value += preview.StringValue;
-                        break;
-                    case TokenType.Semicolon:
-                    case TokenType.CloseCurlyBracket:
-                        stop = true;
-                        break;
+                        res.Value = preview.StringValue;
+                        return res;
                     default:
                         throw new TokenException("unexpected token", preview);
                 }
             }
-            return res;
+            throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
         }
     }
 }
