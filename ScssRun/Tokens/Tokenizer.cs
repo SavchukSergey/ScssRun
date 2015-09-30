@@ -11,79 +11,77 @@ namespace ScssRun.Tokens {
 
         public IList<Token> Read(FileSource source) {
             var context = new TokenizerContext(source);
-            var content = source.Content;
             var res = new List<Token>();
-            var len = content.Length;
+            var len = source.Content.Length;
             while (context.Position < len) {
-                if (context.Position >= len) break;
-
-                var position = context.CreatePosition();
-
-                var ch = content[context.Position++];
-                var preview = (char)(0xffff);
-                if (context.Position < len) {
-                    preview = content[context.Position];
-                }
-                if (ch == '>' && preview == '>') {
-                    res.Add(new Token {
-                        Type = TokenType.RightShift,
-                        StringValue = ">",
-                        Position = position
-                    });
-                    context.Position++;
-                } else if (ch == '<' && preview == '<') {
-                    res.Add(new Token {
-                        Type = TokenType.LeftShift,
-                        StringValue = "<",
-                        Position = position
-                    });
-                    context.Position++;
-                } else if (ch == '/' && preview == '/') {
-                    context.Position++;
-                    res.Add(ParseSingleLineComment(context));
-                } else {
-                    switch (ch) {
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                        case ' ':
-                            context.Position--;
-                            res.Add(ParseWhitespace(context));
-                            break;
-                        case ';':
-                            res.Add(new Token {
-                                Position = position,
-                                Type = TokenType.Semicolon
-                            });
-                            break;
-                        case '"':
-                        case '\'':
-                            context.Position--;
-                            res.Add(ParseString(context));
-                            break;
-                        default:
-                            if (IsPunctuation(ch)) {
-                                res.Add(new Token {
-                                    Type = GetPunctuationTokenType(ch),
-                                    StringValue = ch.ToString(),
-                                    Position = position
-                                });
-                            } else if (char.IsDigit(ch)) {
-                                context.Position--;
-                                res.Add(ParseNumberToken(context));
-                            } else {
-                                context.Position--;
-                                res.Add(ParseLiteral(context));
-                            }
-                            break;
-                    }
-                }
+                var token = ParseToken(context);
+                res.Add(token);
             }
             return res;
         }
 
+        private static Token ParseToken(TokenizerContext context) {
+            var position = context.CreatePosition();
+            var len = context.File.Content.Length;
+            var ch = context.File.Content[context.Position++];
+            var preview = (char)(0xffff);
+            if (context.Position < len) {
+                preview = context.File.Content[context.Position];
+            }
+            if (ch == '>' && preview == '>') {
+                context.Position++;
+                return new Token {
+                    Type = TokenType.RightShift,
+                    StringValue = ">",
+                    Position = position
+                };
+            }
+            if (ch == '<' && preview == '<') {
+                context.Position++;
+                return new Token {
+                    Type = TokenType.LeftShift,
+                    StringValue = "<",
+                    Position = position
+                };
+            }
+            if (ch == '/' && preview == '/') {
+                context.Position++;
+                return ParseSingleLineComment(context);
+            }
+            if (ch == '/' && preview == '*') {
+                context.Position++;
+                return ParseMultiLineComment(context);
+            }
+            switch (ch) {
+                case '\r':
+                case '\n':
+                case '\t':
+                case ' ':
+                    context.Position--;
+                    return ParseWhitespace(context);
+                case '"':
+                case '\'':
+                    context.Position--;
+                    return ParseString(context);
+                default:
+                    if (IsPunctuation(ch)) {
+                        return new Token {
+                            Type = GetPunctuationTokenType(ch),
+                            StringValue = ch.ToString(),
+                            Position = position
+                        };
+                    }
+                    if (char.IsDigit(ch)) {
+                        context.Position--;
+                        return ParseNumberToken(context);
+                    }
+                    context.Position--;
+                    return ParseLiteral(context);
+            }
+        }
+
         private static Token ParseSingleLineComment(TokenizerContext context) {
-            var originalPos = context.Position;
+            var originalPos = context.Position - 2;
             var len = context.File.Content.Length;
             var position = context.CreatePosition();
             while (context.Position < len) {
@@ -107,6 +105,36 @@ namespace ScssRun.Tokens {
             return res;
         }
 
+        private static Token ParseMultiLineComment(TokenizerContext context) {
+            var originalPos = context.Position - 2;
+            var len = context.File.Content.Length;
+            var position = context.CreatePosition();
+            while (context.Position < len - 1) {
+                var ch = context.File.Content[context.Position++];
+                if (ch == '\r' || ch == '\n') {
+                    if (context.Position < len) {
+                        var nextCh = context.File.Content[context.Position];
+                        if ((nextCh == '\r' || nextCh == '\n') && nextCh != ch) {
+                            context.Position++;
+                        }
+                    }
+                    context.IncrementLine();
+                } else if (ch == '*' && context.File.Content[context.Position] == '/') {
+                    context.Position++;
+                    return new Token {
+                        Type = TokenType.MultiLineComment,
+                        StringValue = context.File.Content.Substring(originalPos, context.Position - originalPos),
+                        Position = position
+                    };
+                }
+            }
+            throw new TokenException("unclosed multiline comment", new Token {
+                Type = TokenType.MultiLineComment,
+                StringValue = context.File.Content.Substring(originalPos, context.Position - originalPos),
+                Position = position
+            });
+        }
+
         private static Token ParseWhitespace(TokenizerContext context) {
             var originalPos = context.Position;
             var len = context.File.Content.Length;
@@ -123,6 +151,7 @@ namespace ScssRun.Tokens {
                     context.IncrementLine();
                 } else if (ch == ' ' || ch == '\t') {
                 } else {
+                    context.Position--;
                     break;
                 }
             }
@@ -211,22 +240,24 @@ namespace ScssRun.Tokens {
             throw new TokenException("missing end quote", new Token { Position = position });
         }
 
-        private static Token ParseLiteral(TokenizerContext context) {
-            var token = new StringBuilder();
+        private static Token ParseLiteral(TokenizerContext context, bool allowSingleDot = false) {
+            var originalPosition = context.Position;
             var len = context.File.Content.Length;
             var position = context.CreatePosition();
+            var hasDot = false;
             while (context.Position < len) {
                 var ch = context.File.Content[context.Position++];
-                if (IsPunctuation(ch)) {
+                if (allowSingleDot && !hasDot && ch == '.') {
+                    hasDot = true;
+                } else if (IsPunctuation(ch)) {
                     context.Position--;
                     break;
                 }
-                token.Append(ch);
             }
             return new Token {
                 Position = position,
                 Type = TokenType.Literal,
-                StringValue = token.ToString()
+                StringValue = context.File.Content.Substring(originalPosition, context.Position - originalPosition)
             };
         }
 
@@ -242,20 +273,24 @@ namespace ScssRun.Tokens {
         }
 
         private static Token ParseDecimalIntegerToken(ref Token token) {
-            long val = 0;
+            var val = 0.0;
             var pos = 0;
             var len = token.StringValue.Length;
+            var dotExp = 0;
             while (pos < len) {
                 var ch = token.StringValue[pos++];
                 if (char.IsDigit(ch)) {
                     val = val * 10 + (ch - '0');
+                    if (dotExp > 0) dotExp *= 10;
+                } else if (ch == '.') {
+                    dotExp = 1;
                 } else {
                     throw new TokenException("unexpected decimal symbol '" + ch + "'", token);
                 }
             }
             return new Token {
                 Type = TokenType.Number,
-                NumberValue = val,
+                NumberValue = val / (dotExp > 0 ? dotExp : 1),
                 StringValue = token.StringValue,
                 Position = token.Position
             };
@@ -346,6 +381,7 @@ namespace ScssRun.Tokens {
             switch (ch) {
                 case ',': return TokenType.Comma;
                 case ':': return TokenType.Colon;
+                case ';': return TokenType.Semicolon;
                 case '(': return TokenType.OpenParenthesis;
                 case ')': return TokenType.CloseParenthesis;
                 case '+': return TokenType.Plus;
@@ -355,6 +391,8 @@ namespace ScssRun.Tokens {
                 case '%': return TokenType.Mod;
                 case '<': return TokenType.Less;
                 case '>': return TokenType.Greater;
+                case '{': return TokenType.OpenCurlyBracket;
+                case '}': return TokenType.CloseCurlyBracket;
                 //case '|': return TokenType.BitOr;
                 //case '&': return TokenType.BitAnd;
                 //case '^': return TokenType.BitXor;

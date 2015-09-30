@@ -23,6 +23,10 @@ namespace ScssRun.Tokens {
                         throw new TokenException("comma expected", tkn);
                     case TokenType.Colon:
                         throw new TokenException("colon expected", tkn);
+                    case TokenType.OpenCurlyBracket:
+                        throw new TokenException("open curly bracket expected", tkn);
+                    case TokenType.CloseCurlyBracket:
+                        throw new TokenException("close curly bracket expected", tkn);
                     case TokenType.CloseParenthesis:
                         throw new TokenException("closing parenthesis expected", tkn);
                     default:

@@ -22,6 +22,7 @@
             return new TokenPosition {
                 File = File,
                 Line = _lineNumber,
+                Offset = Position,
                 LineStart = _lineStart
             };
         }

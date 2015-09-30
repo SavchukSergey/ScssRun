@@ -5,6 +5,8 @@ namespace ScssRun.Tokens {
 
         public int Line { get; set; }
 
+        public int Offset { get; set; }
+
         public int LineStart { get; set; }
 
         public FileSource File { get; set; }
@@ -19,5 +21,17 @@ namespace ScssRun.Tokens {
             return sb.ToString();
         }
 
+        public int Column {
+            get {
+                var pos = LineStart;
+                var col = 1;
+                while (pos < Offset) {
+                    var ch = File.Content[pos++];
+                    if (ch == '\t') col += 8;
+                    else col++;
+                }
+                return col;
+            }
+        }
     }
 }

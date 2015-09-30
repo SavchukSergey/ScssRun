@@ -15,8 +15,8 @@
         OpenParenthesis,
         CloseParenthesis,
 
-        OpenCurly,
-        CloseCurly,
+        OpenCurlyBracket,
+        CloseCurlyBracket,
 
         Plus,
         Minus,
