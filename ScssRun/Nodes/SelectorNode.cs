@@ -6,13 +6,32 @@ namespace ScssRun.Nodes {
 
         public IList<ElementNode> Elements { get; } = new List<ElementNode>();
 
+        public IList<CommentNode> Comments { get; } = new List<CommentNode>();
+
         public static SelectorNode Parse(SscsParserContext context) {
             var res = new SelectorNode();
-            while (!context.Tokens.Empty) {
+            var stop = false;
+            while (!context.Tokens.Empty && !stop) {
                 var preview = context.Tokens.Peek();
-                if (preview.Type != TokenType.OpenCurlyBracket) {
-                    var el = ElementNode.Parse(context);
-                    res.Elements.Add(el);
+                switch (preview.Type) {
+                    case TokenType.SingleLineComment:
+                    case TokenType.MultiLineComment:
+                        context.Tokens.Read();
+                        res.Comments.Add(new CommentNode(preview));
+                        break;
+                    case TokenType.Literal:
+                    case TokenType.Hash:
+                        var el = ElementNode.Parse(context);
+                        res.Elements.Add(el);
+                        break;
+                    case TokenType.Whitespace:
+                        context.Tokens.Read();
+                        break;
+                    case TokenType.OpenCurlyBracket:
+                        stop = true;
+                        break;
+                    default:
+                        throw new TokenException("unexpected token", preview);
                 }
             }
             return res;
