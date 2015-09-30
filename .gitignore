@@ -1,3 +1,6 @@
 /ScssRun/bin/
 /ScssRun/obj/
-/.vs/ScssRun/v14/.suo
+/ScssRun.Tests/bin/
+/ScssRun.Tests/obj/
+/.vs/
+/packages/*/
