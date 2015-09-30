@@ -8,7 +8,7 @@ namespace ScssRun.Tests {
         public void ParserTest() {
 
             var parser = new ScssParser();
-            var doc = parser.Parse("p { color :red; }");
+            var doc = parser.Parse("p { color: red; }");
         }
     }
 }
