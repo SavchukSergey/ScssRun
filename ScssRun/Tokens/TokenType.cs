@@ -30,6 +30,7 @@
         Greater,
         Equal,
         GreaterOrEqual,
-        LessOrEqual
+        LessOrEqual,
+        Hash
     }
 }

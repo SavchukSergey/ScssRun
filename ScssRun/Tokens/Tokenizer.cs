@@ -396,6 +396,7 @@ namespace ScssRun.Tokens {
                 //case '|': return TokenType.BitOr;
                 //case '&': return TokenType.BitAnd;
                 //case '^': return TokenType.BitXor;
+                case '#': return TokenType.Hash;
                 case ' ':
                 case '\t':
                 case '\r':
@@ -406,7 +407,6 @@ namespace ScssRun.Tokens {
                     //case '{':
                     //case '}':
                     //case '~':
-                    //case '#':
                     //case '`':
                     //case ';':
                     //case '\\':
