@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -35,5 +37,14 @@ namespace ScssRun.Nodes {
             return res;
         }
 
+        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            for (var i = 0; i < Elements.Count; i++) {
+                var el = Elements[i];
+                if (i != 0) {
+                    writer.Append(' ');
+                }
+                writer.Append(el.Value);
+            }
+        }
     }
 }

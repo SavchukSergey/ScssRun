@@ -1,4 +1,6 @@
-﻿using ScssRun.Tokens;
+﻿using System.Text;
+using ScssRun.Css;
+using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
     public class CommentNode : BaseNode {
@@ -9,5 +11,9 @@ namespace ScssRun.Nodes {
 
         public Token Token { get; }
 
+        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            //TODO:
+            throw new System.NotImplementedException();
+        }
     }
 }

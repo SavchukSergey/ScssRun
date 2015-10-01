@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -33,6 +35,16 @@ namespace ScssRun.Nodes {
                 }
             }
             throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
+        }
+
+        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            for (var i = 0; i < Values.Count; i++) {
+                var el = Values[i];
+                if (i != 0) {
+                    writer.Append(' ');
+                }
+                writer.Append(el.Value);
+            }
         }
     }
 }

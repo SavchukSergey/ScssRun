@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -38,6 +39,10 @@ namespace ScssRun.Nodes {
             }
             res.Value = sb.ToString();
             return res;
+        }
+
+        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            throw new System.NotImplementedException();
         }
     }
 }

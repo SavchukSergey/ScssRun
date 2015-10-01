@@ -1,5 +1,5 @@
 ﻿namespace ScssRun.Nodes {
-    public class BaseValueNode : BaseNode {
+    public abstract class BaseValueNode : BaseNode {
 
     }
 }

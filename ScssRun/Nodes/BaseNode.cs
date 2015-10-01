@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Text;
+using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -59,6 +62,14 @@ namespace ScssRun.Nodes {
 
         protected virtual bool AcceptToken(ref Token token) {
             return false;
+        }
+
+        public abstract void ToCss(CssWriter writer, ScssEnvironment env);
+
+        public string ToCss(ScssEnvironment env) {
+            var sb = new CssWriter(CssWriterOptions.Minified);
+            ToCss(sb, env);
+            return sb.ToString();
         }
     }
 }

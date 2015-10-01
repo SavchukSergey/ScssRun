@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Css\CssWriter.cs" />
+    <Compile Include="Css\CssWriterOptions.cs" />
     <Compile Include="IO\EmbeddedScssSource.cs" />
     <Compile Include="IO\FileScssSource.cs" />
     <Compile Include="IO\IScssSource.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="Nodes\ValueNode.cs" />
     <Compile Include="Nodes\ValuesNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScssEnvironment.cs" />
     <Compile Include="ScssParser.cs" />
     <Compile Include="ScssParserContext.cs" />
     <Compile Include="Tokens\FileSource.cs" />

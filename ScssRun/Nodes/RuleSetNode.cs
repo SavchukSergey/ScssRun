@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -39,9 +41,14 @@ namespace ScssRun.Nodes {
                         break;
                 }
             }
-            res.Rules = (NodeList) ParseBlock(context);
+            res.Rules = (NodeList)ParseBlock(context);
             return res;
         }
 
+        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            foreach (var node in Rules.Nodes) {
+                node.ToCss(writer, env);
+            }
+        }
     }
 }
