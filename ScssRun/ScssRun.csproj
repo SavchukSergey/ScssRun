@@ -55,6 +55,7 @@
     <Compile Include="Expressions\Value\NumberExpression.cs" />
     <Compile Include="Expressions\Value\SubExpression.cs" />
     <Compile Include="Expressions\Value\UnaryExpression.cs" />
+    <Compile Include="Expressions\Value\UnitExpression.cs" />
     <Compile Include="IO\EmbeddedScssSource.cs" />
     <Compile Include="IO\FileScssSource.cs" />
     <Compile Include="IO\IScssSource.cs" />

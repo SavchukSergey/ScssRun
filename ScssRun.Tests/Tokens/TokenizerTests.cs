@@ -55,7 +55,20 @@ namespace ScssRun.Tests.Tokens {
             queue.Read(TokenType.Whitespace);
 
             token = queue.Read(TokenType.Number);
-            Assert.AreEqual(789.52, token.NumberValue);
+            Assert.AreEqual(789.52, token.NumberValue, 0.00000001);
+        }
+
+        [Test]
+        public void NumberUnitTest() {
+            var tokenizer = new Tokenizer();
+            var tokens = tokenizer.Read("123px 456em");
+            Assert.AreEqual(5, tokens.Count);
+            var queue = new TokensQueue(tokens);
+            Assert.AreEqual(123.0, queue.Read(TokenType.Number).NumberValue);
+            Assert.AreEqual("px", queue.Read(TokenType.Literal).StringValue);
+            queue.Read(TokenType.Whitespace);
+            Assert.AreEqual(456.0, queue.Read(TokenType.Number).NumberValue);
+            Assert.AreEqual("em", queue.Read(TokenType.Literal).StringValue);
         }
 
         [Test]

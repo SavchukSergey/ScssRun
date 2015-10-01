@@ -9,6 +9,7 @@
         Rem,
         ViewportWidth,
         ViewportHeight,
-        Color
+        Color,
+        Centimeter
     }
 }

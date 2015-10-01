@@ -22,7 +22,7 @@
         Minus,
         Multiply,
         Divide,
-        Mod,
+        Percentage,
         LeftShift,
         RightShift,
 

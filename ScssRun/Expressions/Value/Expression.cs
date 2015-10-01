@@ -9,7 +9,7 @@ namespace ScssRun.Expressions.Value {
 
         public abstract CssValue Evaluate(ScssEnvironment env);
 
-        protected Expression ParseLiteral(Token token, TokensQueue queue) {
+        protected static Expression ParseLiteral(Token token, TokensQueue queue) {
             if (!queue.Empty) {
                 var preview = queue.Peek();
                 if (preview.Type == TokenType.OpenParenthesis) {
@@ -19,7 +19,7 @@ namespace ScssRun.Expressions.Value {
             return new LiteralExpression { Value = token.StringValue };
         }
 
-        protected Expression Func(Token nameToken, TokensQueue tokens) {
+        protected static Expression Func(Token nameToken, TokensQueue tokens) {
             tokens.Read(TokenType.OpenParenthesis);
             var args = ParseArguments(tokens);
             tokens.Read(TokenType.CloseParenthesis);
@@ -34,18 +34,18 @@ namespace ScssRun.Expressions.Value {
             }
         }
 
-        public Expression Parse(string source) {
+        public static Expression Parse(string source) {
             var tokenizer = new Tokenizer();
             var tokens = tokenizer.Read(source);
             var queue = new TokensQueue(tokens);
             return Parse(queue);
         }
 
-        public Expression Parse(TokensQueue tokens) {
+        public static Expression Parse(TokensQueue tokens) {
             return ParseWithPriority(tokens, 0);
         }
 
-        public IList<Expression> ParseArguments(TokensQueue tokens) {
+        public static IList<Expression> ParseArguments(TokensQueue tokens) {
             var res = new List<Expression>();
             while (!tokens.Empty) {
                 var preview = tokens.Peek();
@@ -59,10 +59,40 @@ namespace ScssRun.Expressions.Value {
             return res;
         }
 
-        private Expression ParseOperand(TokensQueue tokens) {
+        private static Expression ParseNumber(ref Token token, TokensQueue queue) {
+            var inner = new NumberExpression { Value = token.NumberValue };
+            if (!queue.Empty) {
+                var preview = queue.Peek();
+                if (preview.Type == TokenType.Literal || preview.Type == TokenType.Percentage) {
+                    var unitToken = queue.Read();
+                    var unit = ParseUnit(ref unitToken);
+                    return new UnitExpression(inner, unit);
+                }
+            }
+            return inner;
+        }
+
+        private static CssValueType ParseUnit(ref Token token) {
+            switch (token.StringValue) {
+                case "px": return CssValueType.Pixel;
+                case "em": return CssValueType.Em;
+                case "rem": return CssValueType.Rem;
+                case "in": return CssValueType.Inch;
+                case "cm": return CssValueType.Centimeter;
+                case "%": return CssValueType.Percentage;
+                case "vh": return CssValueType.ViewportHeight;
+                case "vw": return CssValueType.ViewportWidth;
+                default:
+                    throw new TokenException("invalid unit", token);
+            }
+        }
+
+        private static Expression ParseOperand(TokensQueue tokens)
+        {
+            tokens.SkipWhite();
             var token = tokens.Read();
             switch (token.Type) {
-                case TokenType.Number: return new NumberExpression { Value = token.NumberValue };
+                case TokenType.Number: return ParseNumber(ref token, tokens);
                 case TokenType.Literal: return ParseLiteral(token, tokens);
                 case TokenType.Minus: return new NegateExpression(ParseOperand(tokens));
                 case TokenType.OpenParenthesis:
@@ -74,10 +104,9 @@ namespace ScssRun.Expressions.Value {
             }
         }
 
-        private Expression ParseWithPriority(TokensQueue tokens, int priority) {
-
-            Expression left = ParseOperand(tokens);
-            while (tokens.Count > 0) {
+        private static Expression ParseWithPriority(TokensQueue tokens, int priority) {
+            var left = ParseOperand(tokens);
+            while (!tokens.Empty) {
                 var preview = tokens.Peek();
                 switch (preview.Type) {
                     case TokenType.Comma:
@@ -97,10 +126,14 @@ namespace ScssRun.Expressions.Value {
                     case TokenType.Minus:
                     case TokenType.Multiply:
                     case TokenType.Divide:
-                    case TokenType.Mod:
+                    case TokenType.Percentage:
                     case TokenType.LeftShift:
                     case TokenType.RightShift:
                         left = ProcessBinaryExpression(token, left, tokens);
+                        break;
+                    case TokenType.Whitespace:
+                    case TokenType.SingleLineComment:
+                    case TokenType.MultiLineComment:
                         break;
                     default:
                         throw new TokenException("unexpected token " + token.StringValue, token);
@@ -110,7 +143,7 @@ namespace ScssRun.Expressions.Value {
             return left;
         }
 
-        private Expression ProcessBinaryExpression(Token opToken, Expression left, TokensQueue tokens) {
+        private static Expression ProcessBinaryExpression(Token opToken, Expression left, TokensQueue tokens) {
             var tokenPriority = GetPriority(opToken.Type);
             var other = ParseWithPriority(tokens, tokenPriority + 1);
             switch (opToken.Type) {
@@ -118,7 +151,7 @@ namespace ScssRun.Expressions.Value {
                 case TokenType.Minus: return new SubExpression(left, other);
                 case TokenType.Multiply: return new MulExpression(left, other);
                 case TokenType.Divide: return new DivExpression(left, other);
-                case TokenType.Mod: return new ModExpression(left, other);
+                case TokenType.Percentage: return new ModExpression(left, other);
                 default:
                     throw new TokenException("unexpected operator", opToken);
             }
@@ -132,7 +165,7 @@ namespace ScssRun.Expressions.Value {
                 case TokenType.Multiply:
                 case TokenType.Divide:
                     return 1;
-                case TokenType.Mod:
+                case TokenType.Percentage:
                     return 2;
 
                 default:

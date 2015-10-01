@@ -240,16 +240,13 @@ namespace ScssRun.Tokens {
             throw new TokenException("missing end quote", new Token { Position = position });
         }
 
-        private static Token ParseLiteral(TokenizerContext context, bool allowSingleDot = false) {
+        private static Token ParseLiteral(TokenizerContext context) {
             var originalPosition = context.Position;
             var len = context.File.Content.Length;
             var position = context.CreatePosition();
-            var hasDot = false;
             while (context.Position < len) {
                 var ch = context.File.Content[context.Position++];
-                if (allowSingleDot && !hasDot && ch == '.') {
-                    hasDot = true;
-                } else if (IsPunctuation(ch)) {
+                if (IsPunctuation(ch)) {
                     context.Position--;
                     break;
                 }
@@ -262,83 +259,30 @@ namespace ScssRun.Tokens {
         }
 
         private static Token ParseNumberToken(TokenizerContext context) {
-            var literal = ParseLiteral(context);
-            if (literal.StringValue.StartsWith("0x")) {
-                return ParsePrefixedHexIntegerToken(ref literal);
-            }
-            if (literal.StringValue.EndsWith("h")) {
-                return ParsePostfixedHexInteger(ref literal);
-            }
-            return ParseDecimalIntegerToken(ref literal);
-        }
-
-        private static Token ParseDecimalIntegerToken(ref Token token) {
+            var originalPosition = context.Position;
+            var len = context.File.Content.Length;
+            var position = context.CreatePosition();
             var val = 0.0;
-            var pos = 0;
-            var len = token.StringValue.Length;
             var dotExp = 0;
-            while (pos < len) {
-                var ch = token.StringValue[pos++];
-                if (char.IsDigit(ch)) {
+            while (context.Position < len) {
+                var ch = context.File.Content[context.Position++];
+                if (ch >= '0' && ch <= '9') {
                     val = val * 10 + (ch - '0');
                     if (dotExp > 0) dotExp *= 10;
-                } else if (ch == '.') {
+                } else if (dotExp == 0 && ch == '.') {
                     dotExp = 1;
                 } else {
-                    throw new TokenException("unexpected decimal symbol '" + ch + "'", token);
+                    context.Position--;
+                    break;
                 }
             }
+            if (dotExp > 0) val /= dotExp;
             return new Token {
                 Type = TokenType.Number,
-                NumberValue = val / (dotExp > 0 ? dotExp : 1),
-                StringValue = token.StringValue,
-                Position = token.Position
+                Position = position,
+                StringValue = context.File.Content.Substring(originalPosition, context.Position - originalPosition),
+                NumberValue = val
             };
-        }
-
-        private static Token ParsePrefixedHexIntegerToken(ref Token token) {
-            long val = 0;
-            var pos = 2;
-            var len = token.StringValue.Length;
-            if (pos >= len) throw new TokenException("Unexpeced end of hex constant", token);
-            while (pos < len) {
-                var ch = token.StringValue[pos++];
-                var hex = GetHexValue(ch);
-                if (hex < 0) throw new TokenException("unexpected hex symbol '" + ch + "'", token);
-                val = val * 16 + hex;
-            }
-            return new Token {
-                Type = TokenType.Number,
-                NumberValue = val,
-                StringValue = token.StringValue,
-                Position = token.Position
-            };
-        }
-
-        private static Token ParsePostfixedHexInteger(ref Token token) {
-            long val = 0;
-            var pos = 0;
-            var len = token.StringValue.Length;
-            if (pos >= len) throw new TokenException("Unexpeced end of hex constant", token);
-            while (pos < len - 1) {
-                var ch = token.StringValue[pos++];
-                var hex = GetHexValue(ch);
-                if (hex < 0) throw new TokenException("unexpected hex symbol '" + ch + "'", token);
-                val = val * 16 + hex;
-            }
-            return new Token {
-                Type = TokenType.Number,
-                NumberValue = val,
-                StringValue = token.StringValue,
-                Position = token.Position
-            };
-        }
-
-        private static int GetHexValue(char ch) {
-            if (ch >= '0' && ch <= '9') return ch - '0';
-            if (ch >= 'A' && ch <= 'F') return ch - 'A' + 10;
-            if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
-            return -1;
         }
 
         private static bool IsPunctuation(char ch) {
@@ -388,7 +332,7 @@ namespace ScssRun.Tokens {
                 case '-': return TokenType.Minus;
                 case '*': return TokenType.Multiply;
                 case '/': return TokenType.Divide;
-                case '%': return TokenType.Mod;
+                case '%': return TokenType.Percentage;
                 case '<': return TokenType.Less;
                 case '>': return TokenType.Greater;
                 case '{': return TokenType.OpenCurlyBracket;

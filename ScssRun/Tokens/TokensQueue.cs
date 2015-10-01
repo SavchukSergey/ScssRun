@@ -55,12 +55,23 @@ namespace ScssRun.Tokens {
 
         public bool Empty => _index >= _queue.Count;
 
-        public int Count => _queue.Count;
-
         public Token LastReadToken { get; private set; }
 
         public TokensQueue SkipWhite() {
             while (!Empty && Peek().Type == TokenType.Whitespace) Read();
+            return this;
+        }
+
+        public TokensQueue SkipWhiteAndComments() {
+            while (!Empty) {
+                var preview = Peek();
+                if (preview.Type == TokenType.Whitespace || preview.Type == TokenType.SingleLineComment ||
+                    preview.Type == TokenType.MultiLineComment) {
+                    Read();
+                } else {
+                    break;
+                }
+            }
             return this;
         }
 
