@@ -12,4 +12,15 @@ namespace ScssRun.Nodes {
             }
         }
     }
+
+    public class NodeList<T> : BaseNode where T : BaseNode{
+
+        public IList<T> Nodes { get; } = new List<T>();
+
+        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            foreach (var node in Nodes) {
+                node.ToCss(writer, env);
+            }
+        }
+    }
 }

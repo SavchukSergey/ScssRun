@@ -1,4 +1,5 @@
-﻿using ScssRun.IO;
+﻿using System.Xml;
+using ScssRun.IO;
 using ScssRun.Nodes;
 using ScssRun.Tokens;
 
@@ -15,7 +16,9 @@ namespace ScssRun {
         }
 
         public ScssDocumentNode Parse(string scss) {
-            return new ScssDocumentNode();
+            var tokenizer = new Tokenizer();
+            var tokens = tokenizer.Read(scss);
+            return ScssDocumentNode.Parse(new ScssParserContext(new TokensQueue(tokens)));
         }
 
     }

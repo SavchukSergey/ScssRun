@@ -38,13 +38,15 @@ namespace ScssRun.Nodes {
         }
 
         public override void ToCss(CssWriter writer, ScssEnvironment env) {
+            var sb = new StringBuilder();
             for (var i = 0; i < Elements.Count; i++) {
                 var el = Elements[i];
                 if (i != 0) {
                     writer.Append(' ');
                 }
-                writer.Append(el.Value);
+                sb.Append(el.Value);
             }
+            writer.AppendSelector(sb.ToString());
         }
     }
 }

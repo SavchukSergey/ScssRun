@@ -9,11 +9,17 @@ namespace ScssRun.Nodes {
 
         public IList<CommentNode> Comments { get; } = new List<CommentNode>();
 
-        protected static BaseNode ParseBlock(ScssParserContext context) {
+        protected static void ParseBlock(ScssParserContext context) {
             context.Tokens.Read(TokenType.OpenCurlyBracket);
-            var node = Parse(context);
+            while (!context.Tokens.Empty) {
+                var preview = context.Tokens.Peek();
+                if (preview.Type == TokenType.CloseCurlyBracket) {
+                    break;
+                } else {
+                    Parse(context);
+                }
+            }
             context.Tokens.Read(TokenType.CloseCurlyBracket);
-            return node;
         }
 
         public static BaseNode Parse(ScssParserContext context) {
@@ -34,12 +40,47 @@ namespace ScssRun.Nodes {
                         stop = true;
                         break;
                     default:
-                        var ruleSet = RuleSetNode.Parse(context);
-                        res.Nodes.Add(ruleSet);
+                        if (IsPropertyName(context)) {
+                            var rule = RuleNode.Parse(context);
+                            context.PushRule(rule);
+                        } else {
+                            var ruleSet = RuleSetNode.Parse(context);
+                            res.Nodes.Add(ruleSet);
+                        }
                         break;
                 }
             }
             return res;
+        }
+
+        protected static bool IsPropertyName(ScssParserContext context) {
+            var tokens = context.Tokens.Moment();
+            if (tokens.Empty) return false;
+            var prev = tokens.Read();
+            var prevNoWhite = TokenType.Whitespace;
+            while (!tokens.Empty) {
+                var token = tokens.Read();
+                switch (token.Type) {
+                    case TokenType.SingleLineComment:
+                    case TokenType.MultiLineComment:
+                    case TokenType.Whitespace:
+                        break;
+                    case TokenType.Colon:
+                        if (prev.Type == TokenType.Colon) return false;
+                        break;
+                    case TokenType.OpenCurlyBracket:
+                        if (prevNoWhite == TokenType.Colon) return true;
+                        return false;
+                    case TokenType.Semicolon:
+                        return true;
+                }
+                if (token.Type != TokenType.Whitespace && token.Type != TokenType.SingleLineComment &&
+                    token.Type != TokenType.MultiLineComment) {
+                    prevNoWhite = token.Type;
+                }
+                prev = token;
+            }
+            return false;
         }
 
         protected BaseNode ParseSelf(ScssParserContext context) {
