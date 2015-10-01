@@ -110,7 +110,7 @@ namespace ScssRun.Nodes {
         public string ToCss(ScssEnvironment env) {
             var sb = new CssWriter(CssWriterOptions.Minified);
             ToCss(sb, env);
-            return sb.ToString();
+            return sb.Result;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace ScssRun.Nodes {
                             throw new TokenException("value expected", context.Tokens.LastReadToken);
                         }
                         return res;
+                    case TokenType.Number:
                     case TokenType.Literal:
                         res.Values.Add(ValueNode.Parse(context));
                         break;
@@ -43,7 +44,7 @@ namespace ScssRun.Nodes {
                 if (i != 0) {
                     writer.Append(' ');
                 }
-                writer.Append(el.Value);
+                writer.Append(el.Value.Evaluate(env).ToString());
             }
         }
     }

@@ -87,9 +87,8 @@ namespace ScssRun.Expressions.Value {
             }
         }
 
-        private static Expression ParseOperand(TokensQueue tokens)
-        {
-            tokens.SkipWhite();
+        private static Expression ParseOperand(TokensQueue tokens) {
+            tokens.SkipWhiteAndComments();
             var token = tokens.Read();
             switch (token.Type) {
                 case TokenType.Number: return ParseNumber(ref token, tokens);
@@ -107,9 +106,11 @@ namespace ScssRun.Expressions.Value {
         private static Expression ParseWithPriority(TokensQueue tokens, int priority) {
             var left = ParseOperand(tokens);
             while (!tokens.Empty) {
+                tokens.SkipWhiteAndComments();
                 var preview = tokens.Peek();
                 switch (preview.Type) {
                     case TokenType.Comma:
+                    case TokenType.Semicolon:
                     case TokenType.CloseParenthesis:
                         return left;
                 }

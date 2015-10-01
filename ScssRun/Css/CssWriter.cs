@@ -39,7 +39,7 @@ namespace ScssRun.Css {
         }
 
         public void AppendRule(string name, string value) {
-            if (_ruleSetOpened) {
+            if (!_ruleSetOpened) {
                 _sb.Append('{');
                 _ruleSetOpened = true;
             }

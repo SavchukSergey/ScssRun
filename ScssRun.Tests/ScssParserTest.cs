@@ -9,10 +9,10 @@ namespace ScssRun.Tests {
         public void ParserTest() {
 
             var parser = new ScssParser();
-            var doc = parser.Parse("p { color: red; }");
+            var doc = parser.Parse("p { width: 20px; }");
             var writer = new CssWriter(CssWriterOptions.Minified);
             doc.ToCss(writer, new ScssEnvironment());
-            Assert.AreEqual("p{color:red;}", writer.Result);
+            Assert.AreEqual("p{width:20px;}", writer.Result);
 
         }
     }

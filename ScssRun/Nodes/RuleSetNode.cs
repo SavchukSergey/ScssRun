@@ -53,9 +53,7 @@ namespace ScssRun.Nodes {
                 sel.ToCss(writer, env);
             }
             foreach (var node in Rules.Nodes) {
-                var name = node.Property;
-                var value = node.Value.ToString(env);
-                writer.AppendRule(name, value);
+                node.ToCss(writer, env);
             }
             writer.EndRuleSet();
         }

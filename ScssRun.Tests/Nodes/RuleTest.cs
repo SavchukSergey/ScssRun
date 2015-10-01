@@ -13,7 +13,7 @@ namespace ScssRun.Tests.Nodes {
             var context = new ScssParserContext(new TokensQueue(tokens));
             var node = RuleNode.Parse(context);
             Assert.AreEqual("color", node.Property);
-            Assert.AreEqual("red", ((ValuesNode)node.Value).Values[0].Value);
+            Assert.AreEqual("red", ((ValuesNode)node.Value).Values[0].Value.Evaluate(new ScssEnvironment()).ToString());
 
         }
 

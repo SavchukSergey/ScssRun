@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Text;
 using ScssRun.Css;
+using ScssRun.Expressions.Value;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
     public class ValueNode : BaseNode {
 
-        public string Value { get; set; }
+        public Expression Value { get; set; }
 
         public new static ValueNode Parse(ScssParserContext context) {
             var res = new ValueNode();
@@ -22,8 +23,8 @@ namespace ScssRun.Nodes {
                         context.Tokens.Read();
                         return res;
                     case TokenType.Literal:
-                        context.Tokens.Read();
-                        res.Value = preview.StringValue;
+                    case TokenType.Number:
+                        res.Value = Expression.Parse(context.Tokens);
                         return res;
                     default:
                         throw new TokenException("unexpected token", preview);
@@ -33,7 +34,7 @@ namespace ScssRun.Nodes {
         }
 
         public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            writer.Append(Value);
+            writer.Append(Value.Evaluate(env).ToString());
         }
     }
 }

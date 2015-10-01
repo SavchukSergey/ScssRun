@@ -60,6 +60,7 @@ namespace ScssRun.Nodes {
 
         private static BaseValueNode ParseValue(ScssParserContext context) {
             var tokens = context.Tokens;
+            context.Tokens.SkipWhiteAndComments();
             //todo: comments are lost. create aggregating node
             while (!tokens.Empty) {
                 var preview = tokens.Peek();
@@ -73,18 +74,14 @@ namespace ScssRun.Nodes {
                         tokens.Read(TokenType.CloseCurlyBracket);
                         return res;
                     default:
-                        tokens.Read();
-                        break;
+                        throw new TokenException("unexpected token", preview);
                 }
             }
             throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
         }
 
         public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            writer.Append(Property);
-            writer.Append(':');
-            Value.ToCss(writer, env);
-            writer.Append(';');
+            writer.AppendRule(Property, Value.ToCss(env));
         }
     }
 }
