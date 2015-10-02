@@ -18,7 +18,10 @@ namespace ScssRun.Expressions.Functions {
                 case CssValueType.Pixel:
                 case CssValueType.Em:
                 case CssValueType.Rem:
+                case CssValueType.ViewportWidth:
+                case CssValueType.ViewportHeight:
                 case CssValueType.Inch:
+                case CssValueType.Centimeter:
                     return new CssValue {
                         Type = l.Type,
                         Number = Math.Round(l.Number)

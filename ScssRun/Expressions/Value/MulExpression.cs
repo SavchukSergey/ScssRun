@@ -25,6 +25,7 @@ namespace ScssRun.Expressions.Value {
                     case CssValueType.ViewportWidth:
                     case CssValueType.ViewportHeight:
                     case CssValueType.Inch:
+                    case CssValueType.Centimeter:
                         return new CssValue {
                             Type = l.Type,
                             Number = l.Number * r.Number

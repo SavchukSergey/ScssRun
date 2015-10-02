@@ -81,7 +81,13 @@ namespace ScssRun.Nodes {
         }
 
         public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            writer.AppendRule(Property, Value.ToCss(env));
+            if (Value is NestedValueNode) {
+                env.PushedNestedProperty(Property);
+                Value.ToCss(writer, env);
+                env.PopNestedProperty();
+            } else {
+                writer.AppendRule(env.FormatProperty(Property), Value.ToCss(env));
+            }
         }
     }
 }

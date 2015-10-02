@@ -35,7 +35,9 @@ namespace ScssRun.Nodes {
         }
 
         public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            throw new NotImplementedException();
+            foreach (var rule in Rules) {
+                rule.ToCss(writer, env);
+            }
         }
     }
 }
