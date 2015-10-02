@@ -75,6 +75,19 @@ namespace ScssRun.Tokens {
             return this;
         }
 
+        public TokensQueue SkipComments() {
+            while (!Empty) {
+                var preview = Peek();
+                if (preview.Type == TokenType.SingleLineComment ||
+                    preview.Type == TokenType.MultiLineComment) {
+                    Read();
+                } else {
+                    break;
+                }
+            }
+            return this;
+        }
+
         public TokensQueue Skip(TokenType type) {
             if (!Empty) {
                 var preview = Peek();
