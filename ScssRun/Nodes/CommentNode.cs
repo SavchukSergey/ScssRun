@@ -11,7 +11,7 @@ namespace ScssRun.Nodes {
 
         public Token Token { get; }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+        public override void Compile(ScssEnvironment env) {
             //TODO:
             throw new System.NotImplementedException();
         }

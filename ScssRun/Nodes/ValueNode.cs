@@ -33,8 +33,8 @@ namespace ScssRun.Nodes {
             throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            writer.Append(Value.Evaluate(env).ToString());
+        public override void Compile(ScssEnvironment env) {
+            //writer.Append(Value.Evaluate(env).ToString());
         }
     }
 }

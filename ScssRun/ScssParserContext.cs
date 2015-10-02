@@ -15,7 +15,7 @@ namespace ScssRun {
             Tokens = tokens;
         }
 
-        public void PushRule(RuleNode rule) {
+        public void PushRule(ScssDeclarationNode rule) {
             var set = CurrentRuleSet;
             if (set == null) {
                 throw new TokenException("selector expected", Tokens.LastReadToken);

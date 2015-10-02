@@ -41,7 +41,7 @@ namespace ScssRun.Nodes {
                         break;
                     default:
                         if (IsPropertyName(context)) {
-                            var rule = RuleNode.Parse(context);
+                            var rule = ScssDeclarationNode.Parse(context);
                             context.PushRule(rule);
                         } else {
                             var ruleSet = RuleSetNode.Parse(context);
@@ -105,12 +105,7 @@ namespace ScssRun.Nodes {
             return false;
         }
 
-        public abstract void ToCss(CssWriter writer, ScssEnvironment env);
+        public abstract void Compile(ScssEnvironment env);
 
-        public string ToCss(ScssEnvironment env) {
-            var sb = new CssWriter(CssWriterOptions.Minified);
-            ToCss(sb, env);
-            return sb.Result;
-        }
     }
 }

@@ -4,14 +4,14 @@ using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
-    public class RuleNode : BaseNode {
+    public class ScssDeclarationNode : BaseNode {
 
         public string Property { get; set; }
 
         public BaseValueNode Value { get; set; }
 
-        public new static RuleNode Parse(ScssParserContext context) {
-            var res = new RuleNode();
+        public new static ScssDeclarationNode Parse(ScssParserContext context) {
+            var res = new ScssDeclarationNode();
             var stop = false;
             while (!context.Tokens.Empty && !stop) {
                 var preview = context.Tokens.Peek();
@@ -80,14 +80,10 @@ namespace ScssRun.Nodes {
             throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            if (Value is NestedValueNode) {
-                env.PushedNestedProperty(Property);
-                Value.ToCss(writer, env);
-                env.PopNestedProperty();
-            } else {
-                writer.AppendRule(env.FormatProperty(Property), Value.ToCss(env));
-            }
+        public override void Compile(ScssEnvironment env) {
+            env.PushProperty(Property);
+            Value.Compile(env);
+            env.PopProperty();
         }
     }
 }

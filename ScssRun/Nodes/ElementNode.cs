@@ -41,8 +41,7 @@ namespace ScssRun.Nodes {
             return res;
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            throw new System.NotImplementedException();
+        public override void Compile(ScssEnvironment env) {
         }
     }
 }

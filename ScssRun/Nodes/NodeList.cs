@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using ScssRun.Css;
 
 namespace ScssRun.Nodes {
     public class NodeList : BaseNode {
 
         public IList<BaseNode> Nodes { get; } = new List<BaseNode>();
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+        public override void Compile(ScssEnvironment env) {
             foreach (var node in Nodes) {
-                node.ToCss(writer, env);
+                node.Compile( env);
             }
         }
     }
@@ -17,9 +16,9 @@ namespace ScssRun.Nodes {
 
         public IList<T> Nodes { get; } = new List<T>();
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+        public override void Compile(ScssEnvironment env) {
             foreach (var node in Nodes) {
-                node.ToCss(writer, env);
+                node.Compile(env);
             }
         }
     }

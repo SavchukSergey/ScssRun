@@ -38,14 +38,22 @@ namespace ScssRun.Nodes {
             throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+        public override void Compile(ScssEnvironment env) {
+            env.Rule.Declarations.Add(new CssDeclaration { Name = env.FormatProperty(), Value = GetValuesString(env)});
+        }
+
+        public string GetValuesString(ScssEnvironment env) {
+            var sb = new StringBuilder();
             for (var i = 0; i < Values.Count; i++) {
                 var el = Values[i];
                 if (i != 0) {
-                    writer.Append(' ');
+                    sb.Append(' ');
                 }
-                writer.Append(el.Value.Evaluate(env).ToString());
+                sb.Append(el.Value.Evaluate(env));
             }
+            return sb.ToString();
         }
+
+
     }
 }

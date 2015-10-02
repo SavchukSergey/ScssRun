@@ -8,6 +8,17 @@ namespace ScssRun.Nodes {
 
         public IList<ElementNode> Elements { get; } = new List<ElementNode>();
 
+        public string FullSelector {
+            get {
+                var selectors = new StringBuilder();
+                foreach (var sel in Elements) {
+                    if (selectors.Length != 0) selectors.Append(',');
+                    selectors.Append(sel.Value);
+                }
+                return selectors.ToString();
+            }
+        }
+
         public new static SelectorNode Parse(ScssParserContext context) {
             var res = new SelectorNode();
             var stop = false;
@@ -37,16 +48,7 @@ namespace ScssRun.Nodes {
             return res;
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            var sb = new StringBuilder();
-            for (var i = 0; i < Elements.Count; i++) {
-                var el = Elements[i];
-                if (i != 0) {
-                    writer.Append(' ');
-                }
-                sb.Append(el.Value);
-            }
-            writer.AppendSelector(sb.ToString());
+        public override void Compile(ScssEnvironment env) {
         }
     }
 }

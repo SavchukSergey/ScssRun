@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ScssRun.Css;
+﻿using System.Collections.Generic;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
     public class NestedValueNode : BaseValueNode {
 
-
-        public IList<RuleNode> Rules { get; } = new List<RuleNode>();
+        public IList<ScssDeclarationNode> Rules { get; } = new List<ScssDeclarationNode>();
 
         public new static NestedValueNode Parse(ScssParserContext context) {
             var res = new NestedValueNode();
@@ -26,7 +22,7 @@ namespace ScssRun.Nodes {
                     case TokenType.CloseCurlyBracket:
                         return res;
                     default:
-                        var rule = RuleNode.Parse(context);
+                        var rule = ScssDeclarationNode.Parse(context);
                         res.Rules.Add(rule);
                         break;
                 }
@@ -34,9 +30,9 @@ namespace ScssRun.Nodes {
             throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+        public override void Compile(ScssEnvironment env) {
             foreach (var rule in Rules) {
-                rule.ToCss(writer, env);
+                rule.Compile(env);
             }
         }
     }

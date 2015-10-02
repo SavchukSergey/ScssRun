@@ -12,10 +12,11 @@ namespace ScssRun.Nodes {
             return res;
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
+        public override void Compile(ScssEnvironment env) {
             foreach (var node in Nodes) {
-                node.ToCss(writer, env);
+                node.Compile(env);
             }
         }
+
     }
 }

@@ -8,7 +8,7 @@ namespace ScssRun.Nodes {
 
         public IList<SelectorNode> Selectors { get; } = new List<SelectorNode>();
 
-        public NodeList<RuleNode> Rules { get; } = new NodeList<RuleNode>();
+        public NodeList<ScssDeclarationNode> Rules { get; } = new NodeList<ScssDeclarationNode>();
 
         public new static RuleSetNode Parse(ScssParserContext context) {
             var res = new RuleSetNode();
@@ -47,15 +47,22 @@ namespace ScssRun.Nodes {
             return res;
         }
 
-        public override void ToCss(CssWriter writer, ScssEnvironment env) {
-            writer.StartRuleSet();
+        public override void Compile(ScssEnvironment env) {
+            var selectors = new StringBuilder();
             foreach (var sel in Selectors) {
-                sel.ToCss(writer, env);
+                if (selectors.Length != 0) selectors.Append(',');
+                selectors.Append(sel.FullSelector);
             }
+            var rule = new CssQualifiedRule {Selector = selectors.ToString()};
+            env.PushRule(rule);
+
             foreach (var node in Rules.Nodes) {
-                node.ToCss(writer, env);
+                node.Compile(env);
             }
-            writer.EndRuleSet();
+
+            env.PopRule();
+
+            env.Document.Rules.Add(rule);
         }
     }
 }
