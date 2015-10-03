@@ -85,13 +85,11 @@
     <Compile Include="Nodes\BaseNode.cs" />
     <Compile Include="Nodes\BaseValueNode.cs" />
     <Compile Include="Nodes\CommentNode.cs" />
-    <Compile Include="Nodes\ElementNode.cs" />
     <Compile Include="Nodes\NestedValueNode.cs" />
     <Compile Include="Nodes\NodeList.cs" />
     <Compile Include="Nodes\ScssDeclarationNode.cs" />
     <Compile Include="Nodes\RuleSetNode.cs" />
     <Compile Include="Nodes\ScssDocumentNode.cs" />
-    <Compile Include="Nodes\SelectorNode.cs" />
     <Compile Include="Nodes\ValueNode.cs" />
     <Compile Include="Nodes\ValuesNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

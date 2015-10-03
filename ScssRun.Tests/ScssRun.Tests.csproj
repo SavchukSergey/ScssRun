@@ -44,11 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertExt.cs" />
     <Compile Include="Expressions\Selectors\SelectorExpressionTests.cs" />
     <Compile Include="Expressions\Value\ExpressionTest.cs" />
-    <Compile Include="Nodes\ElementNodeTest.cs" />
+    <Compile Include="Nodes\RuleSetNodeTest.cs" />
     <Compile Include="Nodes\RuleTest.cs" />
-    <Compile Include="Nodes\SelectorNodeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScssParserTest.cs" />
     <Compile Include="Tokens\TokenizerTests.cs" />

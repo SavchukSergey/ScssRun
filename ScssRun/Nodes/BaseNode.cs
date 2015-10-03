@@ -10,6 +10,7 @@ namespace ScssRun.Nodes {
         public IList<CommentNode> Comments { get; } = new List<CommentNode>();
 
         protected static void ParseBlock(ScssParserContext context) {
+            context.Tokens.SkipWhiteAndComments();
             context.Tokens.Read(TokenType.OpenCurlyBracket);
             while (!context.Tokens.Empty) {
                 var preview = context.Tokens.Peek();
