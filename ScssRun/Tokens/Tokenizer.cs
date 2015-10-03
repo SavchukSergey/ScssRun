@@ -306,6 +306,7 @@ namespace ScssRun.Tokens {
                 case '{':
                 case '}':
                 case ':':
+                case '.':
                 case ',':
                 case '|':
                 case '&':
@@ -323,6 +324,7 @@ namespace ScssRun.Tokens {
 
         private static TokenType GetPunctuationTokenType(char ch) {
             switch (ch) {
+                case '.': return TokenType.Dot;
                 case ',': return TokenType.Comma;
                 case ':': return TokenType.Colon;
                 case ';': return TokenType.Semicolon;

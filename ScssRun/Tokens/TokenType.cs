@@ -31,6 +31,7 @@
         Equal,
         GreaterOrEqual,
         LessOrEqual,
-        Hash
+        Hash,
+        Dot
     }
 }

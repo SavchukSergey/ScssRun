@@ -53,6 +53,8 @@
     <Compile Include="Expressions\Selectors\Combinators\ChildCombinator.cs" />
     <Compile Include="Expressions\Selectors\ClassSelector.cs" />
     <Compile Include="Expressions\Selectors\Combinators\Combinator.cs" />
+    <Compile Include="Expressions\Selectors\Combinators\CombinatorType.cs" />
+    <Compile Include="Expressions\Selectors\Combinators\CombineCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\DescendantCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\GroupCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\SiblingCombinator.cs" />

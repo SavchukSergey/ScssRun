@@ -1,5 +1,4 @@
-﻿using System;
-using ScssRun.Expressions.Selectors.Combinators;
+﻿using ScssRun.Expressions.Selectors.Combinators;
 using ScssRun.Tokens;
 
 namespace ScssRun.Expressions.Selectors {
@@ -15,80 +14,104 @@ namespace ScssRun.Expressions.Selectors {
 
         public static SelectorExpression Parse(TokensQueue tokens) {
             return ParseWithPriority(tokens, 0);
-
         }
 
         private static SelectorExpression ParseWithPriority(TokensQueue tokens, int priority) {
             var left = ParseOperand(tokens);
             while (!tokens.Empty) {
                 tokens.SkipComments();
-                var preview = tokens.Peek();
-                if (preview.Type == TokenType.OpenCurlyBracket) {
-                    return left;
-                }
+                var combinatorType = GetCombinatorType(tokens);
 
-                var tokenPriority = GetPriority(preview.Type);
+                var tokenPriority = GetPriority(combinatorType);
                 if (tokenPriority >= 0 && tokenPriority < priority) {
                     return left;
                 }
-
-                var token = tokens.Read();
-                switch (token.Type) {
-                    case TokenType.Comma:
-                        return new GroupCombinator {
-                            Left = left,
-                            Right = Parse(tokens)
-                        };
-                    case TokenType.Whitespace:
+                switch (combinatorType) {
+                    case CombinatorType.Stop:
+                        return left;
+                    case CombinatorType.Child:
+                    case CombinatorType.Sibling:
+                    case CombinatorType.Group:
+                    case CombinatorType.Descendant:
                         tokens.Read();
-                        tokens.SkipComments();
-                        if (!tokens.Empty && tokens.Peek().Type != TokenType.OpenCurlyBracket) {
-                            return new DescendantCombinator {
-                                Left = left,
-                                Right = Parse(tokens)
-                            };
-                        }
+                        left = ProcessBinaryExpression(combinatorType, left, tokens);
                         break;
-                    case TokenType.Greater:
-                        return new  ChildCombinator {
-                            Left = left,
-                            Right = Parse(tokens)
-                        };
-                    case TokenType.Plus:
-                        return new ChildCombinator {
-                            Left = left,
-                            Right = Parse(tokens)
-                        };
                     default:
-                        throw new TokenException("unexpected token " + token.StringValue, token);
+                        left = ProcessBinaryExpression(CombinatorType.Combine, left, tokens);
+                        break;
                 }
             }
 
             return left;
         }
 
+        private static CombinatorType GetCombinatorType(TokensQueue queue) {
+            if (queue.Empty) return CombinatorType.Stop;
+            var preview = queue.Peek();
+            if (preview.Type != TokenType.Whitespace) {
+                var res = GetCombinatorType(preview.Type);
+                return res != CombinatorType.None ? res : CombinatorType.Combine;
+            } else {
+                var q = queue.Moment().SkipWhiteAndComments();
+                if (q.Empty) return CombinatorType.None;
+                var t = q.Peek();
+                var res = GetCombinatorType(t.Type);
+                return res != CombinatorType.None ? res : CombinatorType.Descendant;
+            }
+        }
+
+        private static CombinatorType GetCombinatorType(TokenType type) {
+            switch (type) {
+                case TokenType.Plus: return CombinatorType.Sibling;
+                case TokenType.Greater: return CombinatorType.Child;
+                case TokenType.Comma: return CombinatorType.Group;
+                case TokenType.OpenCurlyBracket: return CombinatorType.Stop;
+                default:
+                    return CombinatorType.None;
+            }
+        }
+
+        private static SelectorExpression ProcessBinaryExpression(CombinatorType type, SelectorExpression left, TokensQueue tokens) {
+            var tokenPriority = GetPriority(type);
+            var other = ParseWithPriority(tokens, tokenPriority + 1);
+            switch (type) {
+                case CombinatorType.Combine: return new CombineCombinator(left, other);
+                case CombinatorType.Child: return new ChildCombinator { Left = left, Right = other };
+                case CombinatorType.Sibling: return new SiblingCombinator { Left = left, Right = other };
+                case CombinatorType.Descendant: return new DescendantCombinator(left, other);
+                case CombinatorType.Group: return new GroupCombinator(left, other);
+                default:
+                    throw new TokenException("unexpected operator", tokens.LastReadToken);
+            }
+        }
         private static SelectorExpression ParseOperand(TokensQueue tokens) {
             tokens.SkipWhiteAndComments();
             var token = tokens.Read();
             switch (token.Type) {
                 case TokenType.Literal: return ParseTypeSelector(token, tokens);
+                case TokenType.Dot: return ParseClassSelector(token, tokens);
                 default:
                     throw new TokenException("unexpected token " + token.StringValue, token);
             }
         }
 
+        protected static SelectorExpression ParseClassSelector(Token token, TokensQueue queue) {
+            var next = queue.Read(TokenType.Literal);
+            return new ClassSelector(next.StringValue);
+        }
+
         protected static SelectorExpression ParseTypeSelector(Token token, TokensQueue queue) {
-            return new TypeSelector { Value = token.StringValue };
+            return new TypeSelector(token.StringValue);
         }
 
         public abstract string Evaluate(ScssEnvironment env);
 
-        private static int GetPriority(TokenType type) {
+        private static int GetPriority(CombinatorType type) {
             switch (type) {
-                case TokenType.Comma:
-                    return 1;
+                case CombinatorType.Group: return 0;
+                case CombinatorType.Descendant: return 1;
                 default:
-                    return 0;
+                    return 2;
             }
         }
     }

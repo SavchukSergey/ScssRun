@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\Selectors\SelectorExpressionTests.cs" />
     <Compile Include="Expressions\Value\ExpressionTest.cs" />
     <Compile Include="Nodes\ElementNodeTest.cs" />
     <Compile Include="Nodes\RuleTest.cs" />
