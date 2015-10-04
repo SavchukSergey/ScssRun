@@ -76,8 +76,8 @@ namespace ScssRun.Expressions.Selectors {
             var other = ParseWithPriority(tokens, tokenPriority + 1);
             switch (type) {
                 case CombinatorType.Combine: return new CombineCombinator(left, other);
-                case CombinatorType.Child: return new ChildCombinator { Left = left, Right = other };
-                case CombinatorType.Sibling: return new SiblingCombinator { Left = left, Right = other };
+                case CombinatorType.Child: return new ChildCombinator(left, other);
+                case CombinatorType.Sibling: return new SiblingCombinator(left, other);
                 case CombinatorType.Descendant: return new DescendantCombinator(left, other);
                 case CombinatorType.Group: return new GroupCombinator(left, other);
                 default:
@@ -120,5 +120,6 @@ namespace ScssRun.Expressions.Selectors {
                     return 2;
             }
         }
+
     }
 }

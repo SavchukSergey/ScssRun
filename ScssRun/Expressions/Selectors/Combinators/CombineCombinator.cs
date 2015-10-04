@@ -1,5 +1,5 @@
 ﻿namespace ScssRun.Expressions.Selectors.Combinators {
-    public class CombineCombinator : Combinator {
+    public class CombineCombinator : BinaryCombinator {
 
         public CombineCombinator(SelectorExpression left, SelectorExpression right) : base(left, right) {
         }

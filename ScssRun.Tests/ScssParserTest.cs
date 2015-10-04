@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using ScssRun.Css;
+using ScssRun.Nodes;
 
 namespace ScssRun.Tests {
     [TestFixture]
@@ -12,6 +13,29 @@ namespace ScssRun.Tests {
             var env = new ScssEnvironment();
             doc.Compile(env);
             Assert.AreEqual("p{width:20px;}", env.Document.ToString());
+        }
+
+        [Test]
+        public void NestedRuleParserTest() {
+            var parser = new ScssParser();
+            var doc = parser.Parse("div { p { width: 20px; } span {color: red; } }");
+            var env = new ScssEnvironment();
+            doc.Compile(env);
+            AssertExt.AreEqual(new CssDocument {
+                Rules = {
+                    new CssQualifiedRule ("div"),
+                    new CssQualifiedRule ("div p") {
+                        Declarations = {
+                            new CssDeclaration("width", "20px")
+                        }
+                    },
+                    new CssQualifiedRule ("div span") {
+                        Declarations = {
+                            new CssDeclaration("color", "red")
+                        }
+                    },
+                }
+            }, env.Document);
         }
     }
 }

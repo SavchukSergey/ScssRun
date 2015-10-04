@@ -6,7 +6,7 @@ namespace ScssRun.Nodes {
 
         public IList<ScssDeclarationNode> Rules { get; } = new List<ScssDeclarationNode>();
 
-        public new static NestedValueNode Parse(ScssParserContext context) {
+        public static NestedValueNode Parse(ScssParserContext context) {
             var res = new NestedValueNode();
             while (!context.Tokens.Empty) {
                 var preview = context.Tokens.Peek();

@@ -7,6 +7,13 @@ namespace ScssRun.Css {
 
         public CssDeclarationList Declarations { get; } = new CssDeclarationList();
 
+        public CssQualifiedRule() {
+        }
+
+        public CssQualifiedRule(string selector) {
+            Selector = selector;
+        }
+
         public override StringBuilder WriteTo(StringBuilder sb, CssWriterOptions options) {
             sb.Append(Selector);
             sb.Append('{');

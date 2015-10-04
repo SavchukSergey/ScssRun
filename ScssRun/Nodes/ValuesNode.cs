@@ -8,7 +8,7 @@ namespace ScssRun.Nodes {
 
         public IList<ValueNode> Values { get; } = new List<ValueNode>();
 
-        public new static ValuesNode Parse(ScssParserContext context) {
+        public static ValuesNode Parse(ScssParserContext context) {
             var res = new ValuesNode();
             while (!context.Tokens.Empty) {
                 var preview = context.Tokens.Peek();
@@ -39,7 +39,7 @@ namespace ScssRun.Nodes {
         }
 
         public override void Compile(ScssEnvironment env) {
-            env.Rule.Declarations.Add(new CssDeclaration { Name = env.FormatProperty(), Value = GetValuesString(env)});
+            env.CssRule.Declarations.Add(new CssDeclaration { Name = env.FormatProperty(), Value = GetValuesString(env)});
         }
 
         public string GetValuesString(ScssEnvironment env) {

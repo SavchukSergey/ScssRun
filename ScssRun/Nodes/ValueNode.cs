@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-using ScssRun.Css;
-using ScssRun.Expressions.Value;
+﻿using ScssRun.Expressions.Value;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -9,7 +6,7 @@ namespace ScssRun.Nodes {
 
         public Expression Value { get; set; }
 
-        public new static ValueNode Parse(ScssParserContext context) {
+        public static ValueNode Parse(ScssParserContext context) {
             var res = new ValueNode();
             while (!context.Tokens.Empty) {
                 var preview = context.Tokens.Peek();

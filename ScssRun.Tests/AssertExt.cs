@@ -1,9 +1,41 @@
-﻿using NUnit.Framework;
+﻿using System.Text;
+using NUnit.Framework;
+using ScssRun.Css;
 using ScssRun.Expressions.Selectors;
 using ScssRun.Expressions.Selectors.Combinators;
+using ScssRun.Nodes;
 
 namespace ScssRun.Tests {
-    public static  class AssertExt {
+    public static class AssertExt {
+
+        public static void AreEqual(CssDocument expected, CssDocument actual) {
+            var exp = expected.WriteTo(new StringBuilder(), CssWriterOptions.Minified).ToString();
+            var act = actual.WriteTo(new StringBuilder(), CssWriterOptions.Minified).ToString();
+            Assert.AreEqual(exp, act);
+        }
+
+        public static void AreEqual(RuleSetNode expected, RuleSetNode actual) {
+            Assert.AreEqual(expected.RuleSets.Nodes.Count, actual.RuleSets.Nodes.Count);
+            for (var i = 0; i < expected.RuleSets.Nodes.Count; i++) {
+                var expectedRuleSet = expected.RuleSets.Nodes[i];
+                AreEqual(expectedRuleSet, actual.RuleSets.Nodes[i]);
+            }
+            for (var i = 0; i < expected.Rules.Nodes.Count; i++) {
+                var expectedRule = expected.Rules.Nodes[i];
+                AreEqual(expectedRule, actual.Rules.Nodes[i]);
+            }
+            AreEqual(expected.Selector, actual.Selector);
+        }
+
+        public static void AreEqual(ScssDeclarationNode expected, ScssDeclarationNode actual) {
+            Assert.AreEqual(expected.Property, actual.Property);
+            AreEqual(expected.Value, actual.Value);
+        }
+
+        private static void AreEqual(BaseValueNode expected, BaseValueNode actual) {
+            Assert.AreEqual(expected.GetType(), actual.GetType());
+            //todo: compare
+        }
 
         public static void AreEqual(SelectorExpression expected, SelectorExpression actual) {
             Assert.AreEqual(expected.GetType(), actual.GetType());
@@ -25,8 +57,10 @@ namespace ScssRun.Tests {
         }
 
         public static void AreEqual(GroupCombinator expected, GroupCombinator actual) {
-            AreEqual(expected.Left, actual.Left);
-            AreEqual(expected.Right, actual.Right);
+            Assert.AreEqual(expected.Expressions.Length, actual.Expressions.Length);
+            for (var i = 0; i < expected.Expressions.Length; i++) {
+                AreEqual(expected.Expressions[i], actual.Expressions[i]);
+            }
         }
 
         public static void AreEqual(DescendantCombinator expected, DescendantCombinator actual) {

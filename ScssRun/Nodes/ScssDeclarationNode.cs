@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-using ScssRun.Css;
-using ScssRun.Tokens;
+﻿using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
     public class ScssDeclarationNode : BaseNode {
@@ -10,7 +7,7 @@ namespace ScssRun.Nodes {
 
         public BaseValueNode Value { get; set; }
 
-        public new static ScssDeclarationNode Parse(ScssParserContext context) {
+        public static ScssDeclarationNode Parse(ScssParserContext context) {
             var res = new ScssDeclarationNode();
             var stop = false;
             while (!context.Tokens.Empty && !stop) {
@@ -36,7 +33,9 @@ namespace ScssRun.Nodes {
                             throw new TokenException("semicolon expected", preview);
                         }
                         context.Tokens.Read();
+                        context.PushRule(res);
                         res.Value = ParseValue(context);
+                        context.PopRule();
                         break;
                     case TokenType.Semicolon:
                         context.Tokens.Read();

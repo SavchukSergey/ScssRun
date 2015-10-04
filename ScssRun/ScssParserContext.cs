@@ -11,16 +11,22 @@ namespace ScssRun {
 
         public RuleSetNode CurrentRuleSet => _ruleSets.Count > 0 ? _ruleSets.Peek() : null;
 
+        //private readonly Stack<IList<ScssDeclarationNode>> _declarationOwners = new Stack<IList<ScssDeclarationNode>>();
+
         public ScssParserContext(TokensQueue tokens) {
             Tokens = tokens;
         }
 
+        //remove?
         public void PushRule(ScssDeclarationNode rule) {
             var set = CurrentRuleSet;
             if (set == null) {
                 throw new TokenException("selector expected", Tokens.LastReadToken);
             }
-            set.Rules.Nodes.Add(rule);
+        }
+
+        public void PopRule() {
+            
         }
 
         public void PushRuleSet(RuleSetNode ruleSet) {
@@ -30,5 +36,6 @@ namespace ScssRun {
         public void PopRuleSet() {
             _ruleSets.Pop();
         }
+
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Text;
-using ScssRun.Css;
 using ScssRun.Tokens;
 
 namespace ScssRun.Nodes {
@@ -9,50 +6,6 @@ namespace ScssRun.Nodes {
 
         public IList<CommentNode> Comments { get; } = new List<CommentNode>();
 
-        protected static void ParseBlock(ScssParserContext context) {
-            context.Tokens.SkipWhiteAndComments();
-            context.Tokens.Read(TokenType.OpenCurlyBracket);
-            while (!context.Tokens.Empty) {
-                var preview = context.Tokens.Peek();
-                if (preview.Type == TokenType.CloseCurlyBracket) {
-                    break;
-                } else {
-                    Parse(context);
-                }
-            }
-            context.Tokens.Read(TokenType.CloseCurlyBracket);
-        }
-
-        public static BaseNode Parse(ScssParserContext context) {
-            var res = new NodeList();
-            var stop = false;
-            while (!context.Tokens.Empty && !stop) {
-                var preview = context.Tokens.Peek();
-                switch (preview.Type) {
-                    case TokenType.SingleLineComment:
-                    case TokenType.MultiLineComment:
-                        context.Tokens.Read();
-                        res.Comments.Add(new CommentNode(preview));
-                        break;
-                    case TokenType.Whitespace:
-                        context.Tokens.Read();
-                        break;
-                    case TokenType.CloseCurlyBracket:
-                        stop = true;
-                        break;
-                    default:
-                        if (IsPropertyName(context)) {
-                            var rule = ScssDeclarationNode.Parse(context);
-                            context.PushRule(rule);
-                        } else {
-                            var ruleSet = RuleSetNode.Parse(context);
-                            res.Nodes.Add(ruleSet);
-                        }
-                        break;
-                }
-            }
-            return res;
-        }
 
         protected static bool IsPropertyName(ScssParserContext context) {
             var tokens = context.Tokens.Moment();

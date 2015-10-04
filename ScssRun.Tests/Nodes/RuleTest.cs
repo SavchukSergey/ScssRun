@@ -12,6 +12,7 @@ namespace ScssRun.Tests.Nodes {
             const string css = "color: red;";
             var tokens = new Tokenizer().Read(css);
             var context = new ScssParserContext(new TokensQueue(tokens));
+            context.PushRuleSet(new RuleSetNode());
             var node = ScssDeclarationNode.Parse(context);
             Assert.AreEqual("color", node.Property);
             Assert.AreEqual("red", ((ValuesNode)node.Value).Values[0].Value.Evaluate(new ScssEnvironment()).ToString());
@@ -23,6 +24,7 @@ namespace ScssRun.Tests.Nodes {
             const string css = "border: { style: solid; color: red;}";
             var tokens = new Tokenizer().Read(css);
             var context = new ScssParserContext(new TokensQueue(tokens));
+            context.PushRuleSet(new RuleSetNode());
             var node = ScssDeclarationNode.Parse(context);
             Assert.AreEqual("border", node.Property);
             var nested = (NestedValueNode) node.Value;
@@ -56,7 +58,22 @@ p {
 }");
             var env = new ScssEnvironment();
             doc.Compile(env);
-            Assert.AreEqual("p{border-right-style:solid;border-right-width:1px;border-right-color:red;border-left-style:dashed;border-left-width:2px;border-left-color:green;font-family:Arial;}", env.Document.ToString());
+            AssertExt.AreEqual(new CssDocument {
+                Rules = {
+                    new CssQualifiedRule {
+                        Selector = "p",
+                        Declarations = {
+                            new CssDeclaration ("border-right-style", "solid"),
+                            new CssDeclaration ("border-right-width", "1px"),
+                            new CssDeclaration ("border-right-color", "red"),
+                            new CssDeclaration ("border-left-style", "dashed"),
+                            new CssDeclaration ("border-left-width", "2px"),
+                            new CssDeclaration ("border-left-color", "green"),
+                            new CssDeclaration ("font-family", "Arial"),
+                        }
+                    }
+                }
+            }, env.Document);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace ScssRun.Expressions.Selectors.Combinators {
-    public class DescendantCombinator : Combinator {
+    public class DescendantCombinator : BinaryCombinator {
 
-        public DescendantCombinator(SelectorExpression left, SelectorExpression right) : base(left, right) {
+        public DescendantCombinator(SelectorExpression parent, SelectorExpression child) : base(parent, child) {
         }
 
         public override string Evaluate(ScssEnvironment env) {

@@ -1,11 +1,21 @@
-﻿namespace ScssRun.Expressions.Selectors.Combinators {
+﻿using System.Text;
+
+namespace ScssRun.Expressions.Selectors.Combinators {
     public class GroupCombinator : Combinator {
 
-        public GroupCombinator(SelectorExpression left, SelectorExpression right) : base(left, right) {
+        public SelectorExpression[] Expressions { get; }
+
+        public GroupCombinator(params SelectorExpression[] exprs) {
+            Expressions = exprs;
         }
 
         public override string Evaluate(ScssEnvironment env) {
-            return Left.Evaluate(env) + "," + Right.Evaluate(env);
+            var sb = new StringBuilder();
+            foreach (var expr in Expressions) {
+                if (sb.Length != 0) sb.Append(',');
+                sb.Append(expr.Evaluate(env));
+            }
+            return sb.ToString();
         }
     }
 }
