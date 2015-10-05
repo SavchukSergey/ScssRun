@@ -91,6 +91,7 @@ namespace ScssRun.Expressions.Selectors {
                 case TokenType.Literal: return ParseTypeSelector(token, tokens);
                 case TokenType.Dot: return ParseClassSelector(token, tokens);
                 case TokenType.Hash: return ParseIdSelector(token, tokens);
+                case TokenType.Colon: return ParsePseudoSelector(token, tokens);
                 default:
                     throw new TokenException("unexpected token " + token.StringValue, token);
             }
@@ -108,6 +109,11 @@ namespace ScssRun.Expressions.Selectors {
         protected static SelectorExpression ParseIdSelector(Token token, TokensQueue queue) {
             var next = queue.Read(TokenType.Literal);
             return new IdSelector(next.StringValue);
+        }
+
+        protected static SelectorExpression ParsePseudoSelector(Token token, TokensQueue queue) {
+            var next = queue.Read(TokenType.Literal);
+            return new PseudoClassSelector(next.StringValue);
         }
 
         public abstract string Evaluate(ScssEnvironment env);

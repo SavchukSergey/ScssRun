@@ -119,52 +119,58 @@ namespace ScssRun.Tests {
 
         #region Selector expressions
 
-        public static void AreEqual(SelectorExpression expected, SelectorExpression actual) {
-            Assert.AreEqual(expected.GetType(), actual.GetType());
+        public static void AreEqual(SelectorExpression expected, SelectorExpression actual, string message = "") {
+            Assert.AreEqual(expected.GetType(), actual.GetType(), message + "/Type");
             if (expected is GroupCombinator) {
-                AreEqual((GroupCombinator)expected, (GroupCombinator)actual);
+                AreEqual((GroupCombinator)expected, (GroupCombinator)actual, message);
             } else if (expected is DescendantCombinator) {
-                AreEqual((DescendantCombinator)expected, (DescendantCombinator)actual);
+                AreEqual((DescendantCombinator)expected, (DescendantCombinator)actual, message);
             } else if (expected is CombineCombinator) {
-                AreEqual((CombineCombinator)expected, (CombineCombinator)actual);
+                AreEqual((CombineCombinator)expected, (CombineCombinator)actual, message);
             } else if (expected is TypeSelector) {
-                AreEqual((TypeSelector)expected, (TypeSelector)actual);
+                AreEqual((TypeSelector)expected, (TypeSelector)actual, message);
             } else if (expected is ClassSelector) {
-                AreEqual((ClassSelector)expected, (ClassSelector)actual);
+                AreEqual((ClassSelector)expected, (ClassSelector)actual, message);
             } else if (expected is IdSelector) {
-                AreEqual((IdSelector)expected, (IdSelector)actual);
+                AreEqual((IdSelector)expected, (IdSelector)actual, message);
+            } else if (expected is PseudoClassSelector) {
+                AreEqual((PseudoClassSelector)expected, (PseudoClassSelector)actual, message);
             } else {
                 throw new AssertionException("unknown expression type " + expected.GetType());
             }
         }
 
-        public static void AreEqual(GroupCombinator expected, GroupCombinator actual) {
-            Assert.AreEqual(expected.Expressions.Length, actual.Expressions.Length);
+        public static void AreEqual(GroupCombinator expected, GroupCombinator actual, string message) {
+            Assert.AreEqual(expected.Expressions.Length, actual.Expressions.Length, message + "/Expressions/Count");
             for (var i = 0; i < expected.Expressions.Length; i++) {
-                AreEqual(expected.Expressions[i], actual.Expressions[i]);
+                AreEqual(expected.Expressions[i], actual.Expressions[i], message + "/Expressions[" + i + "]");
             }
         }
 
-        public static void AreEqual(DescendantCombinator expected, DescendantCombinator actual) {
-            AreEqual(expected.Left, actual.Left);
-            AreEqual(expected.Right, actual.Right);
+        public static void AreEqual(DescendantCombinator expected, DescendantCombinator actual, string message) {
+            AreEqual(expected.Left, actual.Left, message + "/Left");
+            AreEqual(expected.Right, actual.Right, message + "/Right");
         }
 
-        public static void AreEqual(CombineCombinator expected, CombineCombinator actual) {
-            AreEqual(expected.Left, actual.Left);
-            AreEqual(expected.Right, actual.Right);
+        public static void AreEqual(CombineCombinator expected, CombineCombinator actual, string message) {
+            AreEqual(expected.Left, actual.Left, message + "/Left");
+            AreEqual(expected.Right, actual.Right, message + "/Right");
         }
 
-        public static void AreEqual(TypeSelector expected, TypeSelector actual) {
-            Assert.AreEqual(expected.TypeName, actual.TypeName);
+        public static void AreEqual(TypeSelector expected, TypeSelector actual, string message) {
+            Assert.AreEqual(expected.TypeName, actual.TypeName, message + "/TypeName");
         }
 
-        public static void AreEqual(ClassSelector expected, ClassSelector actual) {
-            Assert.AreEqual(expected.ClassName, actual.ClassName);
+        public static void AreEqual(ClassSelector expected, ClassSelector actual, string message) {
+            Assert.AreEqual(expected.ClassName, actual.ClassName, message + "/ClassName");
         }
 
-        public static void AreEqual(IdSelector expected, IdSelector actual) {
-            Assert.AreEqual(expected.Id, actual.Id);
+        public static void AreEqual(IdSelector expected, IdSelector actual, string message) {
+            Assert.AreEqual(expected.Id, actual.Id, message + "/Id");
+        }
+
+        public static void AreEqual(PseudoClassSelector expected, PseudoClassSelector actual, string message) {
+            Assert.AreEqual(expected.Name, actual.Name, message + "/Name");
         }
 
         #endregion

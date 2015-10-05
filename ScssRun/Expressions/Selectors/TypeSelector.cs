@@ -1,7 +1,7 @@
 ﻿namespace ScssRun.Expressions.Selectors {
     public class TypeSelector : SimpleSelector {
 
-        public string TypeName { get; set; }
+        public string TypeName { get; }
 
         public TypeSelector(string typeName) {
             TypeName = typeName;

@@ -35,6 +35,18 @@ namespace ScssRun.Tests.Expressions.Selectors {
         }
 
         [Test]
+        public void PseudoClassTest() {
+            var expr = SelectorExpression.Parse(":before");
+            AssertExt.AreEqual(new PseudoClassSelector("before"), expr);
+
+            expr = SelectorExpression.Parse("div:before");
+            AssertExt.AreEqual(new CombineCombinator(
+                new TypeSelector("div"), 
+                new PseudoClassSelector("before")
+            ), expr);
+        }
+
+        [Test]
         public void PriorityTest() {
             const string expression = "div.wrapper p.msg, div.header a.link";
             var expr = SelectorExpression.Parse(expression);
