@@ -14,6 +14,13 @@ namespace ScssRun.Tests.Expressions.Value {
         [TestCase("10vw", 10, CssValueType.ViewportWidth)]
         [TestCase("10vh", 10, CssValueType.ViewportHeight)]
         [TestCase("10%", 10, CssValueType.Percentage)]
+        [TestCase("10", 10, CssValueType.Number)]
+        [TestCase("-10px", -10, CssValueType.Pixel)]
+        [TestCase("1.5", 1.5, CssValueType.Number)]
+        [TestCase(".5", .5, CssValueType.Number)]
+        [TestCase("1.5e2", 1.5e2, CssValueType.Number)]
+        [TestCase("1.5e+2", 1.5e+2, CssValueType.Number)]
+        [TestCase("1.5e-2", 1.5e-2, CssValueType.Number)]
         public void NumberUnitTest(string expression, double val, CssValueType unit) {
             var expr = Expression.Parse(expression);
             var eval = expr.Evaluate(new ScssEnvironment());

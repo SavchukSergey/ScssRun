@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Mime;
 using System.Text;
 
 namespace ScssRun.Tokens {
@@ -49,6 +51,9 @@ namespace ScssRun.Tokens {
             }
             if (ch == '/' && preview == '*') {
                 return ParseMultiLineComment(context);
+            }
+            if (ch == '.' && (preview >= '0' && preview <= '9')) {
+                return ParseNumberToken(context);
             }
             switch (ch) {
                 case '\r':
@@ -250,23 +255,21 @@ namespace ScssRun.Tokens {
             if (context.Position < len && context.File.Content[context.Position] == '-') {
                 context.Position++;
             }
-            while (context.Position < len) {
+            if (context.Position < len) {
                 var ch = context.File.Content[context.Position];
                 if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_') {
                     context.Position++;
-                } else {
-                    break;
+                    while (context.Position < len) {
+                        ch = context.File.Content[context.Position];
+                        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-') {
+                            context.Position++;
+                        } else {
+                            break;
+                        }
+                    }
                 }
             }
 
-            while (context.Position < len) {
-                var ch = context.File.Content[context.Position];
-                if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-') {
-                    context.Position++;
-                } else {
-                    break;
-                }
-            }
             return new Token {
                 Position = position,
                 Type = TokenType.Literal,
@@ -293,6 +296,38 @@ namespace ScssRun.Tokens {
                 }
             }
             if (dotExp > 0) val /= dotExp;
+            if (context.Position + 1 < len) {
+                var expPrev = context.File.Content[context.Position];
+                var postExpCh = context.File.Content[context.Position + 1];
+                if (expPrev == 'e' || expPrev == 'E') {
+                    if (postExpCh == '+' || postExpCh == '-' || (postExpCh >= '0' && postExpCh <= '9')) {
+
+                        context.Position++;
+                        if (postExpCh == '+' || postExpCh == '-') context.Position++;
+
+                        var exp = 0.0;
+                        var expChars = 0;
+                        while (context.Position < len) {
+                            var ch = context.File.Content[context.Position];
+                            if (ch >= '0' && ch <= '9') {
+                                context.Position++;
+                                exp = exp * 10 + (ch - '0');
+                                expChars++;
+                            } else {
+                                break;
+                            }
+                        }
+                        if (expChars == 0) {
+                            throw new TokenException("exponent value expected", new Token {
+                                Position = position,
+                                Type = TokenType.Number
+                            });
+                        }
+                        if (postExpCh == '-') exp = -exp;
+                        val = val * Math.Pow(10, exp);
+                    }
+                }
+            }
             return new Token {
                 Type = TokenType.Number,
                 Position = position,
