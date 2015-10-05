@@ -103,5 +103,19 @@ namespace ScssRun.Tests.Tokens {
             Assert.AreEqual(" ", queue.Read(TokenType.Whitespace).StringValue);
             Assert.AreEqual("}", queue.Read(TokenType.CloseCurlyBracket).StringValue);
         }
+
+
+        [Test]
+        public void VendorPropertyTest() {
+            var tokenizer = new Tokenizer();
+            var tokens = tokenizer.Read("-webkit-property: value;");
+            Assert.AreEqual(5, tokens.Count);
+            var queue = new TokensQueue(tokens);
+            Assert.AreEqual("-webkit-property", queue.Read(TokenType.Literal).StringValue);
+            Assert.AreEqual(":", queue.Read(TokenType.Colon).StringValue);
+            Assert.AreEqual(" ", queue.Read(TokenType.Whitespace).StringValue);
+            Assert.AreEqual("value", queue.Read(TokenType.Literal).StringValue);
+            Assert.AreEqual(";", queue.Read(TokenType.Semicolon).StringValue);
+        }
     }
 }

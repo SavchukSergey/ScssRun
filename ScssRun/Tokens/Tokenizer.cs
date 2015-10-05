@@ -23,10 +23,10 @@ namespace ScssRun.Tokens {
         private static Token ParseToken(TokenizerContext context) {
             var position = context.CreatePosition();
             var len = context.File.Content.Length;
-            var ch = context.File.Content[context.Position++];
+            var ch = context.File.Content[context.Position];
             var preview = (char)(0xffff);
-            if (context.Position < len) {
-                preview = context.File.Content[context.Position];
+            if (context.Position + 1 < len) {
+                preview = context.File.Content[context.Position + 1];
             }
             if (ch == '>' && preview == '>') {
                 context.Position++;
@@ -45,11 +45,9 @@ namespace ScssRun.Tokens {
                 };
             }
             if (ch == '/' && preview == '/') {
-                context.Position++;
                 return ParseSingleLineComment(context);
             }
             if (ch == '/' && preview == '*') {
-                context.Position++;
                 return ParseMultiLineComment(context);
             }
             switch (ch) {
@@ -57,14 +55,21 @@ namespace ScssRun.Tokens {
                 case '\n':
                 case '\t':
                 case ' ':
-                    context.Position--;
                     return ParseWhitespace(context);
                 case '"':
                 case '\'':
-                    context.Position--;
                     return ParseString(context);
+                case '-':
+                    var literal = ParseLiteral(context);
+                    if (literal.StringValue != "-") return literal;
+                    return new Token {
+                        Position = literal.Position,
+                        Type = TokenType.Minus,
+                        StringValue = literal.StringValue
+                    };
                 default:
                     if (IsPunctuation(ch)) {
+                        context.Position++;
                         return new Token {
                             Type = GetPunctuationTokenType(ch),
                             StringValue = ch.ToString(),
@@ -72,16 +77,14 @@ namespace ScssRun.Tokens {
                         };
                     }
                     if (char.IsDigit(ch)) {
-                        context.Position--;
                         return ParseNumberToken(context);
                     }
-                    context.Position--;
                     return ParseLiteral(context);
             }
         }
 
         private static Token ParseSingleLineComment(TokenizerContext context) {
-            var originalPos = context.Position - 2;
+            var originalPos = context.Position;
             var len = context.File.Content.Length;
             var position = context.CreatePosition();
             while (context.Position < len) {
@@ -106,7 +109,7 @@ namespace ScssRun.Tokens {
         }
 
         private static Token ParseMultiLineComment(TokenizerContext context) {
-            var originalPos = context.Position - 2;
+            var originalPos = context.Position;
             var len = context.File.Content.Length;
             var position = context.CreatePosition();
             while (context.Position < len - 1) {
@@ -244,10 +247,23 @@ namespace ScssRun.Tokens {
             var originalPosition = context.Position;
             var len = context.File.Content.Length;
             var position = context.CreatePosition();
+            if (context.Position < len && context.File.Content[context.Position] == '-') {
+                context.Position++;
+            }
             while (context.Position < len) {
-                var ch = context.File.Content[context.Position++];
-                if (IsPunctuation(ch)) {
-                    context.Position--;
+                var ch = context.File.Content[context.Position];
+                if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_') {
+                    context.Position++;
+                } else {
+                    break;
+                }
+            }
+
+            while (context.Position < len) {
+                var ch = context.File.Content[context.Position];
+                if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-') {
+                    context.Position++;
+                } else {
                     break;
                 }
             }
