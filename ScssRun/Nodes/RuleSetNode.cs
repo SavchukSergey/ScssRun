@@ -40,6 +40,7 @@ namespace ScssRun.Nodes {
                 context.Tokens.SkipWhiteAndComments();
                 var preview = context.Tokens.Peek();
                 switch (preview.Type) {
+                    case TokenType.Semicolon:
                     case TokenType.Whitespace:
                         context.Tokens.Read();
                         break;

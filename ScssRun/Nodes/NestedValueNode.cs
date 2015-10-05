@@ -8,26 +8,21 @@ namespace ScssRun.Nodes {
 
         public static NestedValueNode Parse(ScssParserContext context) {
             var res = new NestedValueNode();
+            context.Tokens.SkipWhiteAndComments();
+            context.Tokens.Read(TokenType.OpenCurlyBracket);
             while (!context.Tokens.Empty) {
+                context.Tokens.SkipWhiteAndComments();
                 var preview = context.Tokens.Peek();
-                switch (preview.Type) {
-                    case TokenType.SingleLineComment:
-                    case TokenType.MultiLineComment:
-                        context.Tokens.Read();
-                        res.Comments.Add(new CommentNode(preview));
-                        break;
-                    case TokenType.Whitespace:
-                        context.Tokens.Read();
-                        break;
-                    case TokenType.CloseCurlyBracket:
-                        return res;
-                    default:
-                        var rule = ScssDeclarationNode.Parse(context);
-                        res.Rules.Add(rule);
-                        break;
+                if (preview.Type == TokenType.CloseCurlyBracket) break;
+                if (preview.Type == TokenType.Semicolon) {
+                    context.Tokens.Read();
+                    continue;
                 }
+                var rule = ScssDeclarationNode.Parse(context);
+                res.Rules.Add(rule);
             }
-            throw new TokenException("unexpected end of file", context.Tokens.LastReadToken);
+            context.Tokens.Read(TokenType.CloseCurlyBracket);
+            return res;
         }
 
         public override void Compile(ScssEnvironment env) {

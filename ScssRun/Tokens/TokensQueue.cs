@@ -25,6 +25,8 @@ namespace ScssRun.Tokens {
             if (Peek().Type != type) {
                 var tkn = !Empty ? Read() : LastReadToken;
                 switch (type) {
+                    case TokenType.Literal:
+                        throw new TokenException("literal expected", tkn);
                     case TokenType.Comma:
                         throw new TokenException("comma expected", tkn);
                     case TokenType.Colon:
