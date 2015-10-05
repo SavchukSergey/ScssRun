@@ -22,9 +22,7 @@ namespace ScssRun.Tests.Nodes {
                         new ScssDeclarationNode {
                             Property = "color",
                             Value = new ValuesNode {
-                                Values = {
-                                    new ValueNode { Value = Expression.Parse("red")}
-                                }
+                                Value = Expression.Parse("red")
                             }
                         }
                     }
@@ -48,7 +46,7 @@ namespace ScssRun.Tests.Nodes {
                                 Nodes = {
                                     new ScssDeclarationNode {
                                         Property = "color",
-                                        Value = new ValuesNode { Values = { new ValueNode { Value = Expression.Parse("red")} }}
+                                        Value = new ValuesNode { Value = Expression.Parse("red")}
                                     }
                                 }
                             }

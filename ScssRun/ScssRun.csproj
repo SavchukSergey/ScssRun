@@ -76,6 +76,8 @@
     <Compile Include="Expressions\Value\MulExpression.cs" />
     <Compile Include="Expressions\Value\NegateExpression.cs" />
     <Compile Include="Expressions\Value\NumberExpression.cs" />
+    <Compile Include="Expressions\Value\CommaGroupExpression.cs" />
+    <Compile Include="Expressions\Value\SpaceGroupExpression.cs" />
     <Compile Include="Expressions\Value\SubExpression.cs" />
     <Compile Include="Expressions\Value\UnaryExpression.cs" />
     <Compile Include="Expressions\Value\UnitExpression.cs" />
@@ -92,7 +94,6 @@
     <Compile Include="Nodes\ScssDeclarationNode.cs" />
     <Compile Include="Nodes\RuleSetNode.cs" />
     <Compile Include="Nodes\ScssDocumentNode.cs" />
-    <Compile Include="Nodes\ValueNode.cs" />
     <Compile Include="Nodes\ValuesNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScssEnvironment.cs" />

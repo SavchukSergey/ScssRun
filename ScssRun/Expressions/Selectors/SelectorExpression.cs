@@ -23,7 +23,7 @@ namespace ScssRun.Expressions.Selectors {
                 var combinatorType = GetCombinatorType(tokens);
 
                 var tokenPriority = GetPriority(combinatorType);
-                if (tokenPriority >= 0 && tokenPriority < priority) {
+                if (tokenPriority < priority) {
                     return left;
                 }
                 switch (combinatorType) {

@@ -46,11 +46,7 @@ namespace ScssRun.Tests {
         }
 
         public static void AreEqual(ValuesNode expected, ValuesNode actual) {
-            Assert.AreEqual(expected.Values.Count, actual.Values.Count);
-            for (var i = 0; i < expected.Values.Count; i++) {
-                var expectedValue = expected.Values[i];
-                AreEqual(expectedValue, actual.Values[i]);
-            }
+            AreEqual(expected.Value, actual.Value);
         }
 
         public static void AreEqual(NestedValueNode expected, NestedValueNode actual) {
@@ -61,17 +57,57 @@ namespace ScssRun.Tests {
             }
         }
 
-        public static void AreEqual(ValueNode expected, ValueNode actual) {
-            AreEqual(expected.Value, actual.Value);
-        }
-
         #region Value expressions
 
         public static void AreEqual(Expression expected, Expression actual) {
-            var env = new ScssEnvironment();
-            var exp = expected.Evaluate(env);
-            var act = actual.Evaluate(env);
-            Assert.AreEqual(exp, act);
+            Assert.AreEqual(expected.GetType(), actual.GetType());
+            if (expected is SpaceGroupExpression) {
+                AreEqual((SpaceGroupExpression)expected, (SpaceGroupExpression)actual);
+            } else if (expected is CommaGroupExpression) {
+                AreEqual((CommaGroupExpression)expected, (CommaGroupExpression)actual);
+            } else if (expected is UnitExpression) {
+                AreEqual((UnitExpression)expected, (UnitExpression)actual);
+            } else if (expected is NumberExpression) {
+                AreEqual((NumberExpression)expected, (NumberExpression)actual);
+            } else if (expected is LiteralExpression) {
+                AreEqual((LiteralExpression)expected, (LiteralExpression)actual);
+            } else if (expected is AddExpression) {
+                AreEqual((AddExpression)expected, (AddExpression)actual);
+            } else {
+                throw new AssertionException("unknown value type " + expected.GetType().Name);
+            }
+        }
+
+        public static void AreEqual(SpaceGroupExpression expected, SpaceGroupExpression actual) {
+            Assert.AreEqual(expected.Expressions.Length, actual.Expressions.Length);
+            for (var i = 0; i < expected.Expressions.Length; i++) {
+                AreEqual(expected.Expressions[i], actual.Expressions[i]);
+            }
+        }
+
+        public static void AreEqual(CommaGroupExpression expected, CommaGroupExpression actual) {
+            Assert.AreEqual(expected.Expressions.Length, actual.Expressions.Length);
+            for (var i = 0; i < expected.Expressions.Length; i++) {
+                AreEqual(expected.Expressions[i], actual.Expressions[i]);
+            }
+        }
+
+        public static void AreEqual(UnitExpression expected, UnitExpression actual) {
+            Assert.AreEqual(expected.Type, actual.Type);
+            AreEqual(expected.Inner, actual.Inner);
+        }
+
+        public static void AreEqual(NumberExpression expected, NumberExpression actual) {
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
+
+        public static void AreEqual(LiteralExpression expected, LiteralExpression actual) {
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
+
+        public static void AreEqual(AddExpression expected, AddExpression actual) {
+            AreEqual(expected.Left, actual.Left);
+            AreEqual(expected.Right, actual.Right);
         }
 
         #endregion

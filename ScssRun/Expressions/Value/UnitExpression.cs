@@ -1,18 +1,21 @@
 ﻿namespace ScssRun.Expressions.Value {
     public class UnitExpression : Expression {
-        private readonly Expression _inner;
-        private readonly CssValueType _type;
+
+        public Expression Inner { get; }
+
+        public CssValueType Type { get; }
 
         public UnitExpression(Expression inner, CssValueType type) {
-            _inner = inner;
-            _type = type;
+            Inner = inner;
+            Type = type;
         }
 
+
         public override CssValue Evaluate(ScssEnvironment env) {
-            var val = _inner.Evaluate(env);
+            var val = Inner.Evaluate(env);
             return new CssValue {
                 Number = val.Number,
-                Type = _type
+                Type = Type
             };
         }
     }

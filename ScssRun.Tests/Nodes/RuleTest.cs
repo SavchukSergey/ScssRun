@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using ScssRun.Css;
+using ScssRun.Expressions.Value;
 using ScssRun.Nodes;
 using ScssRun.Tokens;
 
@@ -13,9 +14,12 @@ namespace ScssRun.Tests.Nodes {
             var tokens = new Tokenizer().Read(css);
             var context = new ScssParserContext(new TokensQueue(tokens));
             var node = ScssDeclarationNode.Parse(context);
-            Assert.AreEqual("color", node.Property);
-            Assert.AreEqual("red", ((ValuesNode)node.Value).Values[0].Value.Evaluate(new ScssEnvironment()).ToString());
-
+            AssertExt.AreEqual(new ScssDeclarationNode {
+                Property = "color",
+                Value = new ValuesNode {
+                    Value = new LiteralExpression("red")
+                }
+            }, node);
         }
 
         [Test]
@@ -25,7 +29,7 @@ namespace ScssRun.Tests.Nodes {
             var context = new ScssParserContext(new TokensQueue(tokens));
             var node = ScssDeclarationNode.Parse(context);
             Assert.AreEqual("border", node.Property);
-            var nested = (NestedValueNode) node.Value;
+            var nested = (NestedValueNode)node.Value;
             Assert.AreEqual(2, nested.Rules.Count);
             var rule1 = nested.Rules[0];
             var rule2 = nested.Rules[1];

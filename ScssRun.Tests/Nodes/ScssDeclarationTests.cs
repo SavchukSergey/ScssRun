@@ -25,7 +25,7 @@ namespace ScssRun.Tests.Nodes {
                                                 new ScssDeclarationNode {
                                                     Property = "width",
                                                     Value = new ValuesNode {
-                                                        Values = { new ValueNode { Value = Expression.Parse("2px")} }
+                                                        Value = Expression.Parse("2px")
                                                     }
                                                 }
                                             }
@@ -37,7 +37,7 @@ namespace ScssRun.Tests.Nodes {
                                                 new ScssDeclarationNode {
                                                     Property = "width",
                                                     Value = new ValuesNode {
-                                                        Values = { new ValueNode { Value = Expression.Parse("1px")} }
+                                                        Value = Expression.Parse("1px")
                                                     }
                                                 }
                                             }

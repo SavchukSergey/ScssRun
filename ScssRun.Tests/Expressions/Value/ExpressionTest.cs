@@ -80,5 +80,25 @@ namespace ScssRun.Tests.Expressions.Value {
             Assert.AreEqual(val, eval.Number);
             Assert.AreEqual(unit, eval.Type);
         }
+
+        [Test]
+        public void GroupsTest() {
+            var expr = Expression.Parse("10px + 20px 2px, solid chuck norris, red");
+            AssertExt.AreEqual(
+                new CommaGroupExpression(
+                    new SpaceGroupExpression(
+                        new AddExpression(
+                            new UnitExpression(new NumberExpression(10), CssValueType.Pixel),
+                            new UnitExpression(new NumberExpression(20), CssValueType.Pixel)
+                        ),
+                        new UnitExpression(new NumberExpression(2), CssValueType.Pixel)
+                    ),
+                    new SpaceGroupExpression(
+                        new LiteralExpression("solid"),
+                        new LiteralExpression("chuck"),
+                        new LiteralExpression("norris")
+                    ),
+                    new LiteralExpression("red")), expr);
+        }
     }
 }

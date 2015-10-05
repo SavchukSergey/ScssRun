@@ -16,7 +16,7 @@ namespace ScssRun.Expressions.Value {
                     return Func(token, queue);
                 }
             }
-            return new LiteralExpression { Value = token.StringValue };
+            return new LiteralExpression(token.StringValue);
         }
 
         protected static Expression Func(Token nameToken, TokensQueue tokens) {
@@ -42,7 +42,7 @@ namespace ScssRun.Expressions.Value {
         }
 
         public static Expression Parse(TokensQueue tokens) {
-            return ParseWithPriority(tokens, 0);
+            return ParseWithPriority(tokens, -10);
         }
 
         public static IList<Expression> ParseArguments(TokensQueue tokens) {
@@ -60,7 +60,7 @@ namespace ScssRun.Expressions.Value {
         }
 
         private static Expression ParseNumber(ref Token token, TokensQueue queue) {
-            var inner = new NumberExpression { Value = token.NumberValue };
+            var inner = new NumberExpression(token.NumberValue);
             if (!queue.Empty) {
                 var preview = queue.Peek();
                 if (preview.Type == TokenType.Literal || preview.Type == TokenType.Percentage) {
@@ -105,24 +105,22 @@ namespace ScssRun.Expressions.Value {
 
         private static Expression ParseWithPriority(TokensQueue tokens, int priority) {
             var left = ParseOperand(tokens);
+            Token? whiteToken = null;
             while (!tokens.Empty) {
-                tokens.SkipWhiteAndComments();
+                tokens.SkipComments();
                 var preview = tokens.Peek();
                 switch (preview.Type) {
-                    case TokenType.Comma:
                     case TokenType.Semicolon:
                     case TokenType.CloseParenthesis:
                         return left;
                 }
 
                 var tokenPriority = GetPriority(preview.Type);
-                if (tokenPriority >= 0 && tokenPriority < priority) {
-                    if (left != null) return left;
-                    throw new Exception("some case");
+                if (tokenPriority < priority) {
+                    return left;
                 }
 
-                var token = tokens.Read();
-                switch (token.Type) {
+                switch (preview.Type) {
                     case TokenType.Plus:
                     case TokenType.Minus:
                     case TokenType.Multiply:
@@ -130,14 +128,25 @@ namespace ScssRun.Expressions.Value {
                     case TokenType.Percentage:
                     case TokenType.LeftShift:
                     case TokenType.RightShift:
+                    case TokenType.Comma:
+                        var token = tokens.Read();
                         left = ProcessBinaryExpression(token, left, tokens);
+                        whiteToken = null;
                         break;
-                    case TokenType.Whitespace:
                     case TokenType.SingleLineComment:
                     case TokenType.MultiLineComment:
+                        tokens.Read();
+                        break;
+                    case TokenType.Whitespace:
+                        whiteToken = tokens.Read();
                         break;
                     default:
-                        throw new TokenException("unexpected token " + token.StringValue, token);
+                        if (whiteToken.HasValue) {
+                            left = ProcessBinaryExpression(whiteToken.Value, left, tokens);
+                            whiteToken = null;
+                            break;
+                        }
+                        throw new TokenException("unexpected token " + preview.StringValue, preview);
                 }
             }
 
@@ -153,13 +162,27 @@ namespace ScssRun.Expressions.Value {
                 case TokenType.Multiply: return new MulExpression(left, other);
                 case TokenType.Divide: return new DivExpression(left, other);
                 case TokenType.Percentage: return new ModExpression(left, other);
+                case TokenType.Whitespace:
+                    if (left is SpaceGroupExpression) {
+                        return ((SpaceGroupExpression)left).Add(other);
+                    }
+                    return new SpaceGroupExpression(left, other);
+                case TokenType.Comma:
+                    if (left is CommaGroupExpression) {
+                        return ((CommaGroupExpression)left).Add(other);
+                    }
+                    return new CommaGroupExpression(left, other);
                 default:
-                    throw new TokenException("unexpected operator", opToken);
+                    throw new TokenException("unexpected operator " + opToken.Type, opToken);
             }
         }
 
         private static int GetPriority(TokenType type) {
             switch (type) {
+                case TokenType.Comma:
+                    return -2;
+                case TokenType.Whitespace:
+                    return -1;
                 case TokenType.Plus:
                 case TokenType.Minus:
                     return 0;

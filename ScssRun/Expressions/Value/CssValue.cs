@@ -26,7 +26,7 @@ namespace ScssRun.Expressions.Value {
                 case CssValueType.Percentage:
                     return Number.ToString(CultureInfo.InvariantCulture) + "%";
                 case CssValueType.Inch:
-                    return Number.ToString(CultureInfo.InvariantCulture) + "inch";
+                    return Number.ToString(CultureInfo.InvariantCulture) + "in";
                 case CssValueType.ViewportWidth:
                     return Number.ToString(CultureInfo.InvariantCulture) + "vw";
                 case CssValueType.ViewportHeight:
