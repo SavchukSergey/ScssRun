@@ -33,9 +33,7 @@ namespace ScssRun.Nodes {
                             throw new TokenException("semicolon expected", preview);
                         }
                         context.Tokens.Read();
-                        context.PushRule(res);
                         res.Value = ParseValue(context);
-                        context.PopRule();
                         break;
                     case TokenType.Semicolon:
                         context.Tokens.Read();

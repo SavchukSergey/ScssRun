@@ -10,13 +10,11 @@ namespace ScssRun.Nodes {
 
         public NodeList<RuleSetNode> RuleSets { get; } = new NodeList<RuleSetNode>();
 
-        public new static RuleSetNode Parse(ScssParserContext context) {
+        public static RuleSetNode Parse(ScssParserContext context) {
             var res = new RuleSetNode {
                 Selector = SelectorExpression.Parse(context.Tokens)
             };
-            context.PushRuleSet(res);
-            ParseBlock(context);
-            context.PopRuleSet();
+            ParseBlock(context, res);
             return res;
         }
 
@@ -33,12 +31,7 @@ namespace ScssRun.Nodes {
             env.PopRule();
         }
 
-        public static BaseNode Parse2(ScssParserContext context) {
-            var res = new NodeList();
-
-            return res;
-        }
-        protected static void ParseBlock(ScssParserContext context) {
+        protected static void ParseBlock(ScssParserContext context, RuleSetNode node) {
             context.Tokens.SkipWhiteAndComments();
             context.Tokens.Read(TokenType.OpenCurlyBracket);
             var stop = false;
@@ -56,10 +49,10 @@ namespace ScssRun.Nodes {
                     default:
                         if (IsPropertyName(context)) {
                             var rule = ScssDeclarationNode.Parse(context);
-                            context.CurrentRuleSet.Rules.Nodes.Add(rule);
+                            node.Rules.Nodes.Add(rule);
                         } else {
-                            var ruleSet = RuleSetNode.Parse(context);
-                            context.CurrentRuleSet.RuleSets.Nodes.Add(ruleSet);
+                            var ruleSet = Parse(context);
+                            node.RuleSets.Nodes.Add(ruleSet);
                         }
                         break;
                 }

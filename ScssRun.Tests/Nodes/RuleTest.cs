@@ -12,7 +12,6 @@ namespace ScssRun.Tests.Nodes {
             const string css = "color: red;";
             var tokens = new Tokenizer().Read(css);
             var context = new ScssParserContext(new TokensQueue(tokens));
-            context.PushRuleSet(new RuleSetNode());
             var node = ScssDeclarationNode.Parse(context);
             Assert.AreEqual("color", node.Property);
             Assert.AreEqual("red", ((ValuesNode)node.Value).Values[0].Value.Evaluate(new ScssEnvironment()).ToString());
@@ -24,7 +23,6 @@ namespace ScssRun.Tests.Nodes {
             const string css = "border: { style: solid; color: red;}";
             var tokens = new Tokenizer().Read(css);
             var context = new ScssParserContext(new TokensQueue(tokens));
-            context.PushRuleSet(new RuleSetNode());
             var node = ScssDeclarationNode.Parse(context);
             Assert.AreEqual("border", node.Property);
             var nested = (NestedValueNode) node.Value;
