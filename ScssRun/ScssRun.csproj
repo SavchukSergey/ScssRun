@@ -49,6 +49,8 @@
     <Compile Include="Css\CssRule.cs" />
     <Compile Include="Css\CssRulesList.cs" />
     <Compile Include="Css\CssWriterOptions.cs" />
+    <Compile Include="Expressions\Selectors\AttributeEqualsSelector.cs" />
+    <Compile Include="Expressions\Selectors\AttributeExistsSelector.cs" />
     <Compile Include="Expressions\Selectors\AttributeSelector.cs" />
     <Compile Include="Expressions\Selectors\Combinators\Combinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\ChildCombinator.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Expressions\Selectors\Combinators\NestedCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\SiblingCombinator.cs" />
     <Compile Include="Expressions\Selectors\IdSelector.cs" />
+    <Compile Include="Expressions\Selectors\NotExpression.cs" />
     <Compile Include="Expressions\Selectors\PseudoClassSelector.cs" />
     <Compile Include="Expressions\Selectors\SelectorExpression.cs" />
     <Compile Include="Expressions\Selectors\SimpleSelector.cs" />

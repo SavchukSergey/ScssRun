@@ -20,6 +20,12 @@ namespace ScssRun.Expressions.Selectors {
             var left = ParseOperand(tokens);
             while (!tokens.Empty) {
                 tokens.SkipComments();
+                var preview = tokens.Peek();
+                switch (preview.Type) {
+                    case TokenType.CloseParenthesis:
+                    case TokenType.OpenCurlyBracket:
+                        return left;
+                }
                 var combinatorType = GetCombinatorType(tokens);
 
                 var tokenPriority = GetPriority(combinatorType);
@@ -92,9 +98,25 @@ namespace ScssRun.Expressions.Selectors {
                 case TokenType.Dot: return ParseClassSelector(token, tokens);
                 case TokenType.Hash: return ParseIdSelector(token, tokens);
                 case TokenType.Colon: return ParsePseudoSelector(token, tokens);
+                case TokenType.OpenSquareBracket: return ParseAttributeSelector(token, tokens);
                 default:
                     throw new TokenException("unexpected token " + token.StringValue, token);
             }
+        }
+
+        private static SelectorExpression ParseAttributeSelector(Token token, TokensQueue tokens) {
+            var attrName = tokens.Read(TokenType.Literal).StringValue;
+            var operation = tokens.Read();
+            if (operation.Type == TokenType.CloseSquareBracket) return new AttributeExistsSelector(attrName);
+            if (operation.Type == TokenType.Equal) {
+                var val = tokens.Read();
+                if (val.Type != TokenType.Literal && val.Type != TokenType.String) {
+                    throw new TokenException("expected literal or string token", val);
+                }
+                tokens.Read(TokenType.CloseSquareBracket);
+                return new AttributeEqualsSelector(attrName, val.StringValue);
+            }
+            throw new TokenException("unknown attribute operator", operation);
         }
 
         protected static SelectorExpression ParseClassSelector(Token token, TokensQueue queue) {
@@ -113,6 +135,16 @@ namespace ScssRun.Expressions.Selectors {
 
         protected static SelectorExpression ParsePseudoSelector(Token token, TokensQueue queue) {
             var next = queue.Read(TokenType.Literal);
+            if (next.StringValue == "not") {
+                var preview = queue.Peek();
+                if (preview.Type == TokenType.OpenParenthesis) {
+                    queue.Read(TokenType.OpenParenthesis);
+                    var expr = Parse(queue);
+                    if (!(expr is SimpleSelector)) throw new TokenException("simple selector expected", preview);
+                    queue.Read(TokenType.CloseParenthesis);
+                    return new NotExpression((SimpleSelector)expr);
+                }
+            }
             return new PseudoClassSelector(next.StringValue);
         }
 

@@ -135,8 +135,12 @@ namespace ScssRun.Tests {
                 AreEqual((IdSelector)expected, (IdSelector)actual, message);
             } else if (expected is PseudoClassSelector) {
                 AreEqual((PseudoClassSelector)expected, (PseudoClassSelector)actual, message);
+            } else if (expected is NotExpression) {
+                AreEqual((NotExpression)expected, (NotExpression)actual, message);
+            } else if (expected is AttributeSelector) {
+                AreEqual((AttributeSelector)expected, (AttributeSelector)actual, message);
             } else {
-                throw new AssertionException("unknown expression type " + expected.GetType());
+                throw new AssertionException(message + "/Type: unknown expression type " + expected.GetType());
             }
         }
 
@@ -147,30 +151,54 @@ namespace ScssRun.Tests {
             }
         }
 
-        public static void AreEqual(DescendantCombinator expected, DescendantCombinator actual, string message) {
+        public static void AreEqual(DescendantCombinator expected, DescendantCombinator actual, string message = "") {
             AreEqual(expected.Left, actual.Left, message + "/Left");
             AreEqual(expected.Right, actual.Right, message + "/Right");
         }
 
-        public static void AreEqual(CombineCombinator expected, CombineCombinator actual, string message) {
+        public static void AreEqual(CombineCombinator expected, CombineCombinator actual, string message = "") {
             AreEqual(expected.Left, actual.Left, message + "/Left");
             AreEqual(expected.Right, actual.Right, message + "/Right");
         }
 
-        public static void AreEqual(TypeSelector expected, TypeSelector actual, string message) {
+        public static void AreEqual(TypeSelector expected, TypeSelector actual, string message = "") {
             Assert.AreEqual(expected.TypeName, actual.TypeName, message + "/TypeName");
         }
 
-        public static void AreEqual(ClassSelector expected, ClassSelector actual, string message) {
+        public static void AreEqual(ClassSelector expected, ClassSelector actual, string message = "") {
             Assert.AreEqual(expected.ClassName, actual.ClassName, message + "/ClassName");
         }
 
-        public static void AreEqual(IdSelector expected, IdSelector actual, string message) {
+        public static void AreEqual(IdSelector expected, IdSelector actual, string message = "") {
             Assert.AreEqual(expected.Id, actual.Id, message + "/Id");
         }
 
-        public static void AreEqual(PseudoClassSelector expected, PseudoClassSelector actual, string message) {
+        public static void AreEqual(PseudoClassSelector expected, PseudoClassSelector actual, string message = "") {
             Assert.AreEqual(expected.Name, actual.Name, message + "/Name");
+        }
+
+        public static void AreEqual(NotExpression expected, NotExpression actual, string message = "") {
+            AreEqual(expected.Inner, actual.Inner, message + "/Inner");
+        }
+
+        public static void AreEqual(AttributeSelector expected, AttributeSelector actual, string message = "") {
+            Assert.AreEqual(expected.GetType(), actual.GetType(), message + "/Type");
+            if (expected is AttributeExistsSelector) {
+                AreEqual((AttributeExistsSelector)expected, (AttributeExistsSelector)actual, message);
+            } else if (expected is AttributeEqualsSelector) {
+                AreEqual((AttributeEqualsSelector)expected, (AttributeEqualsSelector)actual, message);
+            } else {
+                throw new AssertionException(message + "/Type: unknown expression type " + expected.GetType());
+            }
+        }
+
+        public static void AreEqual(AttributeExistsSelector expected, AttributeExistsSelector actual, string message = "") {
+            Assert.AreEqual(expected.AttributeName, actual.AttributeName, message + "/AttributeName");
+        }
+
+        public static void AreEqual(AttributeEqualsSelector expected, AttributeEqualsSelector actual, string message = "") {
+            Assert.AreEqual(expected.AttributeName, actual.AttributeName, message + "/AttributeName");
+            Assert.AreEqual(expected.Value, actual.Value, message + "/Value");
         }
 
         #endregion

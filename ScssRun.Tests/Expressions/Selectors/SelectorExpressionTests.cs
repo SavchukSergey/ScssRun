@@ -47,6 +47,33 @@ namespace ScssRun.Tests.Expressions.Selectors {
         }
 
         [Test]
+        public void NotExpressionTest() {
+            var expr = SelectorExpression.Parse("div:not(.primary)");
+            AssertExt.AreEqual(new CombineCombinator(
+                new TypeSelector("div"),
+                new NotExpression(new ClassSelector("primary"))
+            ), expr);
+        }
+
+        [Test]
+        public void AttributeExistsTest() {
+            var expr = SelectorExpression.Parse("div[data-value]");
+            AssertExt.AreEqual(new CombineCombinator(
+                new TypeSelector("div"),
+                new AttributeExistsSelector("data-value")
+            ), expr);
+        }
+
+        [Test]
+        public void AttributeEqualsTest() {
+            var expr = SelectorExpression.Parse("div[data-value=qwe]");
+            AssertExt.AreEqual(new CombineCombinator(
+                new TypeSelector("div"),
+                new AttributeEqualsSelector("data-value", "qwe")
+            ), expr);
+        }
+
+        [Test]
         public void PriorityTest() {
             const string expression = "div.wrapper p.msg, div.header a.link";
             var expr = SelectorExpression.Parse(expression);

@@ -391,20 +391,18 @@ namespace ScssRun.Tokens {
                 case '>': return TokenType.Greater;
                 case '{': return TokenType.OpenCurlyBracket;
                 case '}': return TokenType.CloseCurlyBracket;
+                case '[': return TokenType.OpenSquareBracket;
+                case ']': return TokenType.CloseSquareBracket;
                 //case '|': return TokenType.BitOr;
                 //case '&': return TokenType.BitAnd;
                 //case '^': return TokenType.BitXor;
                 case '#': return TokenType.Hash;
                 case '!': return TokenType.ExclamationPoint;
+                case '=': return TokenType.Equal;
                 case ' ':
                 case '\t':
                 case '\r':
                 case '\n':
-                    //case '=':
-                    //case '[':
-                    //case ']':
-                    //case '{':
-                    //case '}':
                     //case '~':
                     //case '`':
                     //case ';':

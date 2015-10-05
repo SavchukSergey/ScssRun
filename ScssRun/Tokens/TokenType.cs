@@ -18,6 +18,9 @@
         OpenCurlyBracket,
         CloseCurlyBracket,
 
+        OpenSquareBracket,
+        CloseSquareBracket,
+
         Plus,
         Minus,
         Multiply,
@@ -33,6 +36,6 @@
         LessOrEqual,
         Hash,
         Dot,
-        ExclamationPoint
+        ExclamationPoint,
     }
 }
