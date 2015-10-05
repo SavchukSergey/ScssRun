@@ -112,6 +112,7 @@ namespace ScssRun.Expressions.Value {
                 switch (preview.Type) {
                     case TokenType.Semicolon:
                     case TokenType.CloseParenthesis:
+                    case TokenType.ExclamationPoint:
                         return left;
                 }
 

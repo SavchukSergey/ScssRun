@@ -32,6 +32,7 @@
         GreaterOrEqual,
         LessOrEqual,
         Hash,
-        Dot
+        Dot,
+        ExclamationPoint
     }
 }

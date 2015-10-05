@@ -50,7 +50,6 @@
     <Compile Include="Expressions\Selectors\SelectorExpressionTests.cs" />
     <Compile Include="Expressions\Value\ExpressionTest.cs" />
     <Compile Include="Nodes\RuleSetNodeTest.cs" />
-    <Compile Include="Nodes\RuleTest.cs" />
     <Compile Include="Nodes\ScssDeclarationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScssParserTest.cs" />

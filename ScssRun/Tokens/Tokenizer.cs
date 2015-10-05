@@ -331,6 +331,7 @@ namespace ScssRun.Tokens {
                 case '#':
                 case '`':
                 case ';':
+                case '!':
                 case '\\':
                     return true;
                 default:
@@ -359,6 +360,7 @@ namespace ScssRun.Tokens {
                 //case '&': return TokenType.BitAnd;
                 //case '^': return TokenType.BitXor;
                 case '#': return TokenType.Hash;
+                case '!': return TokenType.ExclamationPoint;
                 case ' ':
                 case '\t':
                 case '\r':
