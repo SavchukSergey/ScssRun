@@ -3,6 +3,7 @@ using NUnit.Framework;
 using ScssRun.Css;
 using ScssRun.Expressions.Selectors;
 using ScssRun.Expressions.Selectors.Combinators;
+using ScssRun.Expressions.Value;
 using ScssRun.Nodes;
 
 namespace ScssRun.Tests {
@@ -32,10 +33,50 @@ namespace ScssRun.Tests {
             AreEqual(expected.Value, actual.Value);
         }
 
-        private static void AreEqual(BaseValueNode expected, BaseValueNode actual) {
+        public static void AreEqual(BaseValueNode expected, BaseValueNode actual) {
             Assert.AreEqual(expected.GetType(), actual.GetType());
+            if (expected is ValuesNode) {
+                AreEqual((ValuesNode)expected, (ValuesNode)actual);
+            } else if (expected is NestedValueNode) {
+                AreEqual((NestedValueNode)expected, (NestedValueNode)actual);
+            } else {
+                throw new AssertionException("unknown value type");
+            }
             //todo: compare
         }
+
+        public static void AreEqual(ValuesNode expected, ValuesNode actual) {
+            Assert.AreEqual(expected.Values.Count, actual.Values.Count);
+            for (var i = 0; i < expected.Values.Count; i++) {
+                var expectedValue = expected.Values[i];
+                AreEqual(expectedValue, actual.Values[i]);
+            }
+        }
+
+        public static void AreEqual(NestedValueNode expected, NestedValueNode actual) {
+            Assert.AreEqual(expected.Rules.Count, actual.Rules.Count);
+            for (var i = 0; i < expected.Rules.Count; i++) {
+                var expectedValue = expected.Rules[i];
+                AreEqual(expectedValue, actual.Rules[i]);
+            }
+        }
+
+        public static void AreEqual(ValueNode expected, ValueNode actual) {
+            AreEqual(expected.Value, actual.Value);
+        }
+
+        #region Value expressions
+
+        public static void AreEqual(Expression expected, Expression actual) {
+            var env = new ScssEnvironment();
+            var exp = expected.Evaluate(env);
+            var act = actual.Evaluate(env);
+            Assert.AreEqual(exp, act);
+        }
+
+        #endregion
+
+        #region Selector expressions
 
         public static void AreEqual(SelectorExpression expected, SelectorExpression actual) {
             Assert.AreEqual(expected.GetType(), actual.GetType());
@@ -84,5 +125,8 @@ namespace ScssRun.Tests {
         public static void AreEqual(IdSelector expected, IdSelector actual) {
             Assert.AreEqual(expected.Id, actual.Id);
         }
+
+        #endregion
+
     }
 }

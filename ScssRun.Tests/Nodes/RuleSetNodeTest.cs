@@ -22,7 +22,9 @@ namespace ScssRun.Tests.Nodes {
                         new ScssDeclarationNode {
                             Property = "color",
                             Value = new ValuesNode {
-
+                                Values = {
+                                    new ValueNode { Value = Expression.Parse("red")}
+                                }
                             }
                         }
                     }
