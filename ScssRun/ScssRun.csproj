@@ -71,6 +71,7 @@
     <Compile Include="Expressions\Selectors\UniversalSelector.cs" />
     <Compile Include="Expressions\Value\AddExpression.cs" />
     <Compile Include="Expressions\Value\BinaryExpression.cs" />
+    <Compile Include="Expressions\Value\ColorExpression.cs" />
     <Compile Include="Expressions\Value\DivExpression.cs" />
     <Compile Include="Expressions\Value\Expression.cs" />
     <Compile Include="Expressions\Functions\RoundFunctionExpression.cs" />

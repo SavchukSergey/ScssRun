@@ -33,6 +33,8 @@ namespace ScssRun.Expressions.Value {
                     return Number.ToString(CultureInfo.InvariantCulture) + "vh";
                 case CssValueType.String:
                     return String;
+                case CssValueType.Color:
+                    return $"#{Color.R:x2}{Color.G:x2}{Color.B:x2}";//todo: transparency, short hex #000, named colors
                 default:
                     throw new Exception("unknon value type");
             }

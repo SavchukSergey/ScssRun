@@ -88,6 +88,19 @@ namespace ScssRun.Tests.Expressions.Value {
             Assert.AreEqual(unit, eval.Type);
         }
 
+        [TestCase("#aaa", 0xaa, 0xaa, 0xaa, 255)]
+        [TestCase("#a03", 0xaa, 0x00, 0x33, 255)]
+        [TestCase("#a12345", 0xa1, 0x23, 0x45, 255)]
+        public void ColorTest(string expression, int r, int g, int b, int a) {
+            var expr = Expression.Parse(expression);
+            var eval = expr.Evaluate(new ScssEnvironment());
+            Assert.AreEqual(CssValueType.Color, eval.Type);
+            Assert.AreEqual(r, eval.Color.R);
+            Assert.AreEqual(g, eval.Color.G);
+            Assert.AreEqual(b, eval.Color.B);
+            Assert.AreEqual(a, eval.Color.A);
+        }
+
         [Test]
         public void GroupsTest() {
             var expr = Expression.Parse("10px + 20px 2px, solid chuck norris, red");

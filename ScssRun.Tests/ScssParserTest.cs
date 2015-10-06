@@ -7,6 +7,24 @@ namespace ScssRun.Tests {
     public class ScssParserTest {
 
         [Test]
+        public void SimpleParseTest() {
+            const string input = @"
+#main p {
+  color: #eeffdd;
+  width: 97%;
+
+  .redbox {
+    background-color: #ffbca8;
+    color: #bfadef;
+  }
+}";
+            var doc = new ScssParser().Parse(input);
+            var env = new ScssEnvironment();
+            doc.Compile(env);
+            var css = env.Document.ToString();
+        }
+
+        [Test]
         public void ParserTest() {
             var parser = new ScssParser();
             var doc = parser.Parse("p { width: 20px; }");

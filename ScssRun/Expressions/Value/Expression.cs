@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ScssRun.Expressions.Functions;
 using ScssRun.Tokens;
@@ -72,6 +71,34 @@ namespace ScssRun.Expressions.Value {
             return inner;
         }
 
+        private static Expression ParseHashColor(ref Token token, TokensQueue queue) {
+            var val = queue.Read(TokenType.Literal);
+            if (val.StringValue.Length == 6) {
+                var rh = GetHexChar(ref val, 0);
+                var rl = GetHexChar(ref val, 1);
+                var gh = GetHexChar(ref val, 2);
+                var gl = GetHexChar(ref val, 3);
+                var bh = GetHexChar(ref val, 4);
+                var bl = GetHexChar(ref val, 5);
+                return new ColorExpression(rh * 16 + rl, gh * 16 + gl, bh * 16 + bl);
+            }
+            if (val.StringValue.Length == 3) {
+                var rhl = GetHexChar(ref val, 0);
+                var ghl = GetHexChar(ref val, 1);
+                var bhl = GetHexChar(ref val, 2);
+                return new ColorExpression(rhl * 17, ghl * 17, bhl * 17);
+            }
+            throw new TokenException("invalid hex color", token);
+        }
+
+        private static int GetHexChar(ref Token token, int index) {
+            var ch = token.StringValue[index];
+            if (ch >= '0' && ch <= '9') return ch - '0';
+            if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
+            if (ch >= 'A' && ch <= 'F') return ch - 'A' + 10;
+            throw new TokenException("invalid hex color", token);
+        }
+
         private static CssValueType ParseUnit(ref Token token) {
             switch (token.StringValue) {
                 case "px": return CssValueType.Pixel;
@@ -93,6 +120,7 @@ namespace ScssRun.Expressions.Value {
             switch (token.Type) {
                 case TokenType.Number: return ParseNumber(ref token, tokens);
                 case TokenType.Literal: return ParseLiteral(token, tokens);
+                case TokenType.Hash: return ParseHashColor(ref token, tokens);
                 case TokenType.Minus: return new NegateExpression(ParseOperand(tokens));
                 case TokenType.OpenParenthesis:
                     var inner = Parse(tokens);
