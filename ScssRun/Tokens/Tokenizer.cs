@@ -394,7 +394,7 @@ namespace ScssRun.Tokens {
                 case '[': return TokenType.OpenSquareBracket;
                 case ']': return TokenType.CloseSquareBracket;
                 //case '|': return TokenType.BitOr;
-                //case '&': return TokenType.BitAnd;
+                case '&': return TokenType.Ampersand;
                 //case '^': return TokenType.BitXor;
                 case '#': return TokenType.Hash;
                 case '!': return TokenType.ExclamationPoint;

@@ -8,7 +8,7 @@ namespace ScssRun {
 
         private readonly Stack<string> _nestedProperties = new Stack<string>();
         private readonly Stack<CssQualifiedRule> _cssRules = new Stack<CssQualifiedRule>();
-        private readonly Stack<SelectorExpression>  _scssRules = new Stack<SelectorExpression>();
+        private readonly Stack<SelectorExpression> _scssRules = new Stack<SelectorExpression>();
 
         public void PushProperty(string propertyName) {
             if (_nestedProperties.Count > 0) {
@@ -31,15 +31,15 @@ namespace ScssRun {
         }
 
         public void PushRule(SelectorExpression expression) {
-            if (_scssRules.Count > 0) {
-                expression = new NestedCombinator(_scssRules.Peek(), expression);
-            }
+            expression = expression.WrapWithParent(this);
+            var rule = new CssQualifiedRule { Selector = expression.Evaluate(this) };
             _scssRules.Push(expression);
-            var rule = new CssQualifiedRule { Selector =  expression.Evaluate(this) };
             _cssRules.Push(rule);
         }
 
         public CssQualifiedRule CssRule => _cssRules.Count > 0 ? _cssRules.Peek() : null;
+
+        public SelectorExpression ScssRule => _scssRules.Count > 0 ? _scssRules.Peek() : null;
 
         public CssDocument Document { get; } = new CssDocument();
     }

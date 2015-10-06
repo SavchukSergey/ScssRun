@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 
 namespace ScssRun.Expressions.Selectors.Combinators {
     public class GroupCombinator : Combinator {
@@ -16,6 +17,10 @@ namespace ScssRun.Expressions.Selectors.Combinators {
                 sb.Append(expr.Evaluate(env));
             }
             return sb.ToString();
+        }
+
+        public override SelectorExpression WrapWithParent(ScssEnvironment env) {
+            return new GroupCombinator(Expressions.Select(e => e.WrapWithParent(env)).ToArray());
         }
     }
 }

@@ -37,5 +37,6 @@
         Hash,
         Dot,
         ExclamationPoint,
+        Ampersand
     }
 }

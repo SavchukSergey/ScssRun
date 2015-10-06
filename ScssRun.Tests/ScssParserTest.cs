@@ -36,7 +36,19 @@ namespace ScssRun.Tests {
         [Test]
         public void NestedRuleParserTest() {
             var parser = new ScssParser();
-            var doc = parser.Parse("div { p { width: 20px; } span {color: red; } }");
+            var doc = parser.Parse(@"
+div {
+    p {
+        width: 20px;
+    }
+    span {
+        color: red;
+
+        &:after {
+            display: none;
+        }
+    }
+}");
             var env = new ScssEnvironment();
             doc.Compile(env);
             AssertExt.AreEqual(new CssDocument {
@@ -50,6 +62,11 @@ namespace ScssRun.Tests {
                     new CssQualifiedRule ("div span") {
                         Declarations = {
                             new CssDeclaration("color", "red")
+                        }
+                    },
+                    new CssQualifiedRule ("div span:after") {
+                        Declarations = {
+                            new CssDeclaration("display", "none")
                         }
                     },
                 }

@@ -5,6 +5,15 @@ namespace ScssRun.Expressions.Selectors {
     //http://www.w3.org/TR/css3-selectors/
     public abstract class SelectorExpression {
 
+        public virtual bool HasExplicitParent => false;
+
+        public virtual SelectorExpression WrapWithParent(ScssEnvironment env) {
+            if (HasExplicitParent || env.ScssRule == null) {
+                return this;
+            }
+            return new DescendantCombinator(env.ScssRule, this);
+        }
+
         public static SelectorExpression Parse(string source) {
             var tokenizer = new Tokenizer();
             var tokens = tokenizer.Read(source);
@@ -99,6 +108,7 @@ namespace ScssRun.Expressions.Selectors {
                 case TokenType.Hash: return ParseIdSelector(token, tokens);
                 case TokenType.Colon: return ParsePseudoSelector(token, tokens);
                 case TokenType.OpenSquareBracket: return ParseAttributeSelector(token, tokens);
+                case TokenType.Ampersand: return new ParentSelector();
                 default:
                     throw new TokenException("unexpected token " + token.StringValue, token);
             }
