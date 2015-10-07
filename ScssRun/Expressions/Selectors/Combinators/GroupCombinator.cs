@@ -10,6 +10,10 @@ namespace ScssRun.Expressions.Selectors.Combinators {
             Expressions = exprs;
         }
 
+        public GroupCombinator Add(params SelectorExpression[] exprs) {
+            return new GroupCombinator(Expressions.Concat(exprs).ToArray());
+        }
+
         public override string Evaluate(ScssEnvironment env) {
             var sb = new StringBuilder();
             foreach (var expr in Expressions) {

@@ -90,11 +90,15 @@ namespace ScssRun.Expressions.Selectors {
             var tokenPriority = GetPriority(type);
             var other = ParseWithPriority(tokens, tokenPriority + 1);
             switch (type) {
-                case CombinatorType.Combine: return new CombineCombinator(left, other);
+                case CombinatorType.Combine:
+                    var combineCombinator = left as CombineCombinator;
+                    return combineCombinator != null ? combineCombinator.Add(other) : new CombineCombinator(left, other);
                 case CombinatorType.Child: return new ChildCombinator(left, other);
                 case CombinatorType.Sibling: return new SiblingCombinator(left, other);
                 case CombinatorType.Descendant: return new DescendantCombinator(left, other);
-                case CombinatorType.Group: return new GroupCombinator(left, other);
+                case CombinatorType.Group:
+                    var groupCombinator = left as GroupCombinator;
+                    return groupCombinator != null ? groupCombinator.Add(other) : new GroupCombinator(left, other);
                 default:
                     throw new TokenException("unexpected operator", tokens.LastReadToken);
             }

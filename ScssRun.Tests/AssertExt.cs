@@ -157,8 +157,10 @@ namespace ScssRun.Tests {
         }
 
         public static void AreEqual(CombineCombinator expected, CombineCombinator actual, string message = "") {
-            AreEqual(expected.Left, actual.Left, message + "/Left");
-            AreEqual(expected.Right, actual.Right, message + "/Right");
+            Assert.AreEqual(expected.Expressions.Length, actual.Expressions.Length, message + "/Expressions/Count");
+            for (var i = 0; i < expected.Expressions.Length; i++) {
+                AreEqual(expected.Expressions[i], actual.Expressions[i], message + "/Expressions[" + i + "]");
+            }
         }
 
         public static void AreEqual(TypeSelector expected, TypeSelector actual, string message = "") {
