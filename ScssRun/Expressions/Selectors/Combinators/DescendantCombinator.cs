@@ -22,5 +22,7 @@ namespace ScssRun.Expressions.Selectors.Combinators {
             }
             return sb.ToString();
         }
+
+        public override bool HasExplicitParent => Expressions.Any(expr => expr.HasExplicitParent);
     }
 }

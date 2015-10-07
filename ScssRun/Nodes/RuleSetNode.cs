@@ -6,15 +6,22 @@ namespace ScssRun.Nodes {
 
         public SelectorExpression Selector { get; set; }
 
+        public SelectorExpression RawSelector { get; set; }
+
         public NodeList<ScssDeclarationNode> Rules { get; } = new NodeList<ScssDeclarationNode>();
 
         public NodeList<RuleSetNode> RuleSets { get; } = new NodeList<RuleSetNode>();
 
-        public static RuleSetNode Parse(ScssParserContext context) {
+        public static RuleSetNode Parse(ScssParserContext context)
+        {
+            var raw = SelectorExpression.Parse(context.Tokens, context.Selector);
+            context.PushSelector(raw);
             var res = new RuleSetNode {
-                Selector = SelectorExpression.Parse(context.Tokens)
+                RawSelector = raw,
+                Selector = context.Selector
             };
             ParseBlock(context, res);
+            context.PopSelector();
             return res;
         }
 

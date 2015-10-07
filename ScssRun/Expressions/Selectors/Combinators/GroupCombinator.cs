@@ -23,8 +23,5 @@ namespace ScssRun.Expressions.Selectors.Combinators {
             return sb.ToString();
         }
 
-        public override SelectorExpression WrapWithParent(ScssEnvironment env) {
-            return new GroupCombinator(Expressions.Select(e => e.WrapWithParent(env)).ToArray());
-        }
     }
 }

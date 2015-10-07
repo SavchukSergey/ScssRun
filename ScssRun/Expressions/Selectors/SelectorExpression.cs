@@ -7,13 +7,6 @@ namespace ScssRun.Expressions.Selectors {
 
         public virtual bool HasExplicitParent => false;
 
-        public virtual SelectorExpression WrapWithParent(ScssEnvironment env) {
-            if (HasExplicitParent || env.ScssRule == null) {
-                return this;
-            }
-            return NestedCombinator.Nest(env.ScssRule, this);
-        }
-
         public static SelectorExpression Parse(string source) {
             var tokenizer = new Tokenizer();
             var tokens = tokenizer.Read(source);
@@ -21,12 +14,12 @@ namespace ScssRun.Expressions.Selectors {
             return Parse(queue);
         }
 
-        public static SelectorExpression Parse(TokensQueue tokens) {
-            return ParseWithPriority(tokens, 0);
+        public static SelectorExpression Parse(TokensQueue tokens, SelectorExpression parent = null) {
+            return ParseWithPriority(tokens, 0, parent);
         }
 
-        private static SelectorExpression ParseWithPriority(TokensQueue tokens, int priority) {
-            var left = ParseOperand(tokens);
+        private static SelectorExpression ParseWithPriority(TokensQueue tokens, int priority, SelectorExpression parent = null) {
+            var left = ParseOperand(tokens, parent);
             while (!tokens.Empty) {
                 tokens.SkipComments();
                 var preview = tokens.Peek();
@@ -101,7 +94,8 @@ namespace ScssRun.Expressions.Selectors {
                     throw new TokenException("unexpected operator", tokens.LastReadToken);
             }
         }
-        private static SelectorExpression ParseOperand(TokensQueue tokens) {
+
+        private static SelectorExpression ParseOperand(TokensQueue tokens, SelectorExpression parent = null) {
             tokens.SkipWhiteAndComments();
             var token = tokens.Read();
             switch (token.Type) {
@@ -110,7 +104,7 @@ namespace ScssRun.Expressions.Selectors {
                 case TokenType.Hash: return ParseIdSelector(token, tokens);
                 case TokenType.Colon: return ParsePseudoSelector(token, tokens);
                 case TokenType.OpenSquareBracket: return ParseAttributeSelector(token, tokens);
-                case TokenType.Ampersand: return new ParentSelector();
+                case TokenType.Ampersand: return new ParentSelector(parent);
                 default:
                     throw new TokenException("unexpected token " + token.StringValue, token);
             }

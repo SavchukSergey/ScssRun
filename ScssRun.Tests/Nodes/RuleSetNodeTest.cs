@@ -16,7 +16,7 @@ namespace ScssRun.Tests.Nodes {
             var context = new ScssParserContext(new TokensQueue(tokens));
             var node = RuleSetNode.Parse(context);
             AssertExt.AreEqual(new RuleSetNode {
-                Selector = new TypeSelector("div"),
+                RawSelector = new TypeSelector("div"),
                 Rules = {
                     Nodes = {
                         new ScssDeclarationNode {
@@ -37,11 +37,11 @@ namespace ScssRun.Tests.Nodes {
             var context = new ScssParserContext(new TokensQueue(tokens));
             var node = RuleSetNode.Parse(context);
             AssertExt.AreEqual(new RuleSetNode {
-                Selector = new TypeSelector("div"),
+                RawSelector = new TypeSelector("div"),
                 RuleSets = {
                     Nodes = {
                         new RuleSetNode {
-                            Selector = new TypeSelector("p"),
+                            RawSelector = new TypeSelector("p"),
                             Rules = {
                                 Nodes = {
                                     new ScssDeclarationNode {

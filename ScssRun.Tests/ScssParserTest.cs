@@ -43,9 +43,14 @@ div {
     }
     span {
         color: red;
-
-        &:after {
-            display: none;
+        &:hover {
+            color: green;
+            &:after {
+                display: none;
+            }
+            span {
+                color: blue;
+            }
         }
     }
 }");
@@ -64,9 +69,19 @@ div {
                             new CssDeclaration("color", "red")
                         }
                     },
-                    new CssQualifiedRule ("div span:after") {
+                    new CssQualifiedRule ("div span:hover") {
+                        Declarations = {
+                            new CssDeclaration("color", "green"),
+                        }
+                    },
+                    new CssQualifiedRule ("div span:hover:after") {
                         Declarations = {
                             new CssDeclaration("display", "none")
+                        }
+                    },
+                    new CssQualifiedRule ("div span:hover span") {
+                        Declarations = {
+                            new CssDeclaration("color", "blue"),
                         }
                     },
                 }

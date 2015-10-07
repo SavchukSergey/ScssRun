@@ -8,8 +8,6 @@ namespace ScssRun.Expressions.Selectors.Combinators {
             Right = right;
             if (left == null) throw new ArgumentNullException(nameof(left));
             if (right == null) throw new ArgumentNullException(nameof(right));
-
-            if (left is GroupCombinator || right is GroupCombinator) throw new ArgumentException();
         }
 
         public SelectorExpression Left { get; set; }

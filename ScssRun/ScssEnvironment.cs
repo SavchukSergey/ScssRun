@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ScssRun.Css;
 using ScssRun.Expressions.Selectors;
+using ScssRun.Expressions.Selectors.Combinators;
 
 namespace ScssRun {
     public class ScssEnvironment {
@@ -30,7 +31,6 @@ namespace ScssRun {
         }
 
         public void PushRule(SelectorExpression expression) {
-            expression = expression.WrapWithParent(this);
             var rule = new CssQualifiedRule { Selector = expression.Evaluate(this) };
             _scssRules.Push(expression);
             _cssRules.Push(rule);
@@ -38,8 +38,7 @@ namespace ScssRun {
 
         public CssQualifiedRule CssRule => _cssRules.Count > 0 ? _cssRules.Peek() : null;
 
-        public SelectorExpression ScssRule => _scssRules.Count > 0 ? _scssRules.Peek() : null;
-
         public CssDocument Document { get; } = new CssDocument();
+
     }
 }

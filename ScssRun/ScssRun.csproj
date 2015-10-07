@@ -60,7 +60,6 @@
     <Compile Include="Expressions\Selectors\Combinators\CombineCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\DescendantCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\GroupCombinator.cs" />
-    <Compile Include="Expressions\Selectors\Combinators\NestedCombinator.cs" />
     <Compile Include="Expressions\Selectors\Combinators\SiblingCombinator.cs" />
     <Compile Include="Expressions\Selectors\IdSelector.cs" />
     <Compile Include="Expressions\Selectors\NotExpression.cs" />

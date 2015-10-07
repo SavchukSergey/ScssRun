@@ -29,7 +29,7 @@ namespace ScssRun.Tests {
                 var expectedRule = expected.Rules.Nodes[i];
                 AreEqual(expectedRule, actual.Rules.Nodes[i], message + "Rules[" + i + "]");
             }
-            AreEqual(expected.Selector, actual.Selector);
+            AreEqual(expected.RawSelector, actual.RawSelector, message + "/RawSelector");
         }
 
         public static void AreEqual(ScssDeclarationNode expected, ScssDeclarationNode actual, string message = "") {
