@@ -1,12 +1,26 @@
-﻿namespace ScssRun.Expressions.Selectors.Combinators {
-    public class DescendantCombinator : BinaryCombinator {
+﻿using System.Linq;
+using System.Text;
 
-        public DescendantCombinator(SelectorExpression parent, SelectorExpression child) : base(parent, child) {
+namespace ScssRun.Expressions.Selectors.Combinators {
+    public class DescendantCombinator : Combinator {
+
+        public SelectorExpression[] Expressions { get; }
+
+        public DescendantCombinator(params SelectorExpression[] exprs) {
+            Expressions = exprs;
+        }
+
+        public DescendantCombinator Add(params SelectorExpression[] exprs) {
+            return new DescendantCombinator(Expressions.Concat(exprs).ToArray());
         }
 
         public override string Evaluate(ScssEnvironment env) {
-            return Left.Evaluate(env) + " " + Right.Evaluate(env);
+            var sb = new StringBuilder();
+            foreach (var expr in Expressions) {
+                if (sb.Length != 0) sb.Append(' ');
+                sb.Append(expr.Evaluate(env));
+            }
+            return sb.ToString();
         }
-
     }
 }

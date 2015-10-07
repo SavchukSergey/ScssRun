@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ScssRun.Css;
 using ScssRun.Expressions.Selectors;
-using ScssRun.Expressions.Selectors.Combinators;
 
 namespace ScssRun {
     public class ScssEnvironment {

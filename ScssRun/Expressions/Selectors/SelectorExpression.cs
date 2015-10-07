@@ -11,7 +11,7 @@ namespace ScssRun.Expressions.Selectors {
             if (HasExplicitParent || env.ScssRule == null) {
                 return this;
             }
-            return new DescendantCombinator(env.ScssRule, this);
+            return NestedCombinator.Nest(env.ScssRule, this);
         }
 
         public static SelectorExpression Parse(string source) {
@@ -95,7 +95,9 @@ namespace ScssRun.Expressions.Selectors {
                     return combineCombinator != null ? combineCombinator.Add(other) : new CombineCombinator(left, other);
                 case CombinatorType.Child: return new ChildCombinator(left, other);
                 case CombinatorType.Sibling: return new SiblingCombinator(left, other);
-                case CombinatorType.Descendant: return new DescendantCombinator(left, other);
+                case CombinatorType.Descendant:
+                    var descendantCombinator = left as DescendantCombinator;
+                    return descendantCombinator != null ? descendantCombinator.Add(other) : new DescendantCombinator(left, other);
                 case CombinatorType.Group:
                     var groupCombinator = left as GroupCombinator;
                     return groupCombinator != null ? groupCombinator.Add(other) : new GroupCombinator(left, other);
