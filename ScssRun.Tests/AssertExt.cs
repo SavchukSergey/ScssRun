@@ -127,6 +127,8 @@ namespace ScssRun.Tests {
                 AreEqual((DescendantCombinator)expected, (DescendantCombinator)actual, message);
             } else if (expected is CombineCombinator) {
                 AreEqual((CombineCombinator)expected, (CombineCombinator)actual, message);
+            } else if (expected is ChildCombinator) {
+                AreEqual((ChildCombinator)expected, (ChildCombinator)actual, message);
             } else if (expected is TypeSelector) {
                 AreEqual((TypeSelector)expected, (TypeSelector)actual, message);
             } else if (expected is ClassSelector) {
@@ -163,6 +165,11 @@ namespace ScssRun.Tests {
             for (var i = 0; i < expected.Expressions.Length; i++) {
                 AreEqual(expected.Expressions[i], actual.Expressions[i], message + "/Expressions[" + i + "]");
             }
+        }
+
+        public static void AreEqual(ChildCombinator expected, ChildCombinator actual, string message = "") {
+            AreEqual(expected.Left, actual.Left, "/Left");
+            AreEqual(expected.Right, actual.Right, "/Right");
         }
 
         public static void AreEqual(TypeSelector expected, TypeSelector actual, string message = "") {

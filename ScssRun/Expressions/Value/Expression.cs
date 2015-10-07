@@ -8,7 +8,7 @@ namespace ScssRun.Expressions.Value {
 
         public abstract CssValue Evaluate(ScssEnvironment env);
 
-        protected static Expression ParseLiteral(Token token, TokensQueue queue) {
+        protected static Expression ParseLiteral(ref Token token, TokensQueue queue) {
             if (!queue.Empty) {
                 var preview = queue.Peek();
                 if (preview.Type == TokenType.OpenParenthesis) {
@@ -119,7 +119,7 @@ namespace ScssRun.Expressions.Value {
             var token = tokens.Read();
             switch (token.Type) {
                 case TokenType.Number: return ParseNumber(ref token, tokens);
-                case TokenType.Literal: return ParseLiteral(token, tokens);
+                case TokenType.Literal: return ParseLiteral(ref token, tokens);
                 case TokenType.Hash: return ParseHashColor(ref token, tokens);
                 case TokenType.Minus: return new NegateExpression(ParseOperand(tokens));
                 case TokenType.OpenParenthesis:
@@ -161,10 +161,6 @@ namespace ScssRun.Expressions.Value {
                         var token = tokens.Read();
                         left = ProcessBinaryExpression(token, left, tokens);
                         whiteToken = null;
-                        break;
-                    case TokenType.SingleLineComment:
-                    case TokenType.MultiLineComment:
-                        tokens.Read();
                         break;
                     case TokenType.Whitespace:
                         whiteToken = tokens.Read();

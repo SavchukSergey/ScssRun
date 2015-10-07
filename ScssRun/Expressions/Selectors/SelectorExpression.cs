@@ -35,55 +35,51 @@ namespace ScssRun.Expressions.Selectors {
                     case TokenType.OpenCurlyBracket:
                         return left;
                 }
-                var combinatorType = GetCombinatorType(tokens);
+                var combinatorType = PeekCombinatorType(tokens);
 
                 var tokenPriority = GetPriority(combinatorType);
                 if (tokenPriority < priority) {
                     return left;
                 }
-                switch (combinatorType) {
-                    case CombinatorType.Stop:
-                        return left;
-                    case CombinatorType.Child:
-                    case CombinatorType.Sibling:
-                    case CombinatorType.Group:
-                    case CombinatorType.Descendant:
-                        tokens.Read();
-                        left = ProcessBinaryExpression(combinatorType, left, tokens);
-                        break;
-                    default:
-                        left = ProcessBinaryExpression(CombinatorType.Combine, left, tokens);
-                        break;
-                }
+                combinatorType = ReadCombinatorType(tokens);
+                if (combinatorType == CombinatorType.Stop) return left;
+                left = ProcessBinaryExpression(combinatorType, left, tokens);
             }
 
             return left;
         }
 
-        private static CombinatorType GetCombinatorType(TokensQueue queue) {
-            if (queue.Empty) return CombinatorType.Stop;
-            var preview = queue.Peek();
-            if (preview.Type != TokenType.Whitespace) {
-                var res = GetCombinatorType(preview.Type);
-                return res != CombinatorType.None ? res : CombinatorType.Combine;
-            } else {
-                var q = queue.Moment().SkipWhiteAndComments();
-                if (q.Empty) return CombinatorType.None;
-                var t = q.Peek();
-                var res = GetCombinatorType(t.Type);
-                return res != CombinatorType.None ? res : CombinatorType.Descendant;
-            }
+        private static CombinatorType PeekCombinatorType(TokensQueue queue) {
+            return ReadCombinatorType(queue.Moment());
         }
 
-        private static CombinatorType GetCombinatorType(TokenType type) {
-            switch (type) {
-                case TokenType.Plus: return CombinatorType.Sibling;
-                case TokenType.Greater: return CombinatorType.Child;
-                case TokenType.Comma: return CombinatorType.Group;
-                case TokenType.OpenCurlyBracket: return CombinatorType.Stop;
-                default:
-                    return CombinatorType.None;
+        private static CombinatorType ReadCombinatorType(TokensQueue queue) {
+            var hasWhite = false;
+            while (!queue.Empty) {
+                queue.SkipComments();
+                var preview = queue.Peek();
+                switch (preview.Type) {
+                    case TokenType.Whitespace:
+                        queue.Read();
+                        hasWhite = true;
+                        break;
+                    case TokenType.Plus:
+                        queue.Read();
+                        return CombinatorType.Sibling;
+                    case TokenType.Greater:
+                        queue.Read();
+                        return CombinatorType.Child;
+                    case TokenType.Comma:
+                        queue.Read();
+                        return CombinatorType.Group;
+                    case TokenType.OpenCurlyBracket:
+                    case TokenType.CloseParenthesis:
+                        return CombinatorType.Stop;
+                    default:
+                        return hasWhite ? CombinatorType.Descendant : CombinatorType.Combine;
+                }
             }
+            return CombinatorType.Stop;
         }
 
         private static SelectorExpression ProcessBinaryExpression(CombinatorType type, SelectorExpression left, TokensQueue tokens) {

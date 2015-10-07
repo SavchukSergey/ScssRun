@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertExt.cs" />
+    <Compile Include="Expressions\Selectors\ChildCombinatorTests.cs" />
+    <Compile Include="Expressions\Selectors\CombineSelectorTests.cs" />
+    <Compile Include="Expressions\Selectors\DescendantSelectorTests.cs" />
     <Compile Include="Expressions\Selectors\NestedCombinatorTests.cs" />
     <Compile Include="Expressions\Selectors\SelectorExpressionTests.cs" />
     <Compile Include="Expressions\Value\ExpressionTest.cs" />
